@@ -1,6 +1,6 @@
 bin/
 .classpath
 .project
-.setttings/
-.target/
+.setttings
+target
 src/main/resources/
