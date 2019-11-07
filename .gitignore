@@ -1,1 +1,5 @@
-/target/
+bin/
+.classpath
+.project
+.setttings/
+src/main/resources/
