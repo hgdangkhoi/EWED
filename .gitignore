@@ -2,4 +2,5 @@ bin/
 .classpath
 .project
 .setttings/
+.target/
 src/main/resources/
