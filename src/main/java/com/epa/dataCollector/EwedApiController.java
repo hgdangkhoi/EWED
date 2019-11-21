@@ -31,10 +31,13 @@ public class EwedApiController {
 	 * 
 	 * @return Facility Information and Summary JSON
 	 */
-	@RequestMapping("/getFacility/{filterField}/{filterValue}/{minYear}/{maxYear}")
-	public String getFacility(@PathVariable(value="filterField") String filterField, @PathVariable(value="filterValue") String filterValue,
-			@PathVariable(value="minYear") int minYear, @PathVariable(value="maxYear") int maxYear) {
-		return apiService.getFacility(filterField ,filterValue,"", minYear, maxYear);
+	@RequestMapping("/getFacility/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}")
+	public String getFacility(
+			@PathVariable(value="filterField") String filterField, 
+			@PathVariable(value="filterValue") String filterValue, 
+			@PathVariable(value="minYear") int minYear, @PathVariable(value="minMonth") int minMonth, 
+			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth) {
+		return apiService.getFacility(filterField ,filterValue, minYear, minMonth, maxYear, maxMonth);
 	}
 	
 	/**
@@ -63,13 +66,15 @@ public class EwedApiController {
 		return apiService.getAllFacilities(filterField ,filterValue);
 	}
 	
-	@RequestMapping("/getFacilityData/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}")
+	@RequestMapping("/getFacilityData/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelType}/{fuelTypeList}")
 	public String getFacilityData(
 			@PathVariable(value="filterField") String filterField, 
 			@PathVariable(value="filterValue") String filterValue, 
 			@PathVariable(value="minYear") int minYear, @PathVariable(value="minMonth") int minMonth, 
-			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth) {
-		return apiService.getFacilityData(filterField ,filterValue, minYear, minMonth, maxYear, maxMonth);
+			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth,
+			@PathVariable(value="fuelType") String fuelType,
+			@PathVariable(value="fuelTypeList") String[] fuelTypeList) {
+		return apiService.getFacilityData(filterField ,filterValue, minYear, minMonth, maxYear, maxMonth, fuelType, fuelTypeList);
 	}
 	
 	@RequestMapping("/defaultViewData/{filterField}/{minYear}/{minMonth}/{maxYear}/{maxMonth}")
