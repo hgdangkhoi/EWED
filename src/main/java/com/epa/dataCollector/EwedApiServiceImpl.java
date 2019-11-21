@@ -197,51 +197,49 @@ public class EwedApiServiceImpl implements EwedApiService {
 	
 	@Override
 	public String getFacilityData(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType, String[] fuelTypeList) {
-		if (fuelTypeList[0] == "all") {
-			List<Facility> facList = listOfFacilitiesWithinFilter(filterField, filterValue);
-			List<MonthWiseSummary> monthWiseSummaryList =  new ArrayList<MonthWiseSummary>();
-			monthWiseSummaryList = queryMonthWiseSummary(filterField, filterValue, minYear, minMonth, maxYear, maxMonth);
-			
-			List<TotalSummary> totalSummaryList =  new ArrayList<TotalSummary>();
-			totalSummaryList = queryTotalSummary(filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelType, fuelTypeList);
-			
-			// Stores the month wise summary of all facilities in the given range of year
-			HashMap<Integer, HashMap<Integer, DefaultOutputJson_custom>> facMonthWiseData = new HashMap<Integer, HashMap<Integer,DefaultOutputJson_custom>>();
-			HashMap<Integer, DefaultOutputJson_custom> genEmWaterPerMonth =  new HashMap<Integer, DefaultOutputJson_custom>();
-			for (MonthWiseSummary monthWise: monthWiseSummaryList) {
-				DefaultOutputJson_custom customObj = new DefaultOutputJson_custom();;
-				double gen = monthWise.getGeneration() != null ? Double.parseDouble(monthWise.getGeneration().trim()) : 0;
-				double em = monthWise.getEmission() != null ? Double.parseDouble(monthWise.getEmission().trim()) : 0;
-				double wc = monthWise.getWaterConsumption() != null ? Double.parseDouble(monthWise.getWaterConsumption().trim()) : 0;
-				double ww = monthWise.getWaterWithdrawal() != null ? Double.parseDouble(monthWise.getWaterWithdrawal().trim()) : 0;
-				customObj.generation = formatter.format(gen);
-				customObj.emission = formatter.format(em);
-				customObj.waterConsumption = formatter.format(wc);
-				customObj.waterWithdrawal = formatter.format(ww);
-				if (facMonthWiseData.containsKey(monthWise.getGenYear())) {
-					genEmWaterPerMonth = facMonthWiseData.get(monthWise.getGenYear());				
-				}
-				genEmWaterPerMonth.put(monthWise.getGenMonth(), customObj);
-				facMonthWiseData.put(monthWise.getGenYear(), genEmWaterPerMonth);
+		
+		//List<Facility> facList = listOfFacilitiesWithinFilter(filterField, filterValue);
+		List<Facility> facList = queryFacilityWithFuelType(filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelType, fuelTypeList);
+		List<MonthWiseSummary> monthWiseSummaryList =  new ArrayList<MonthWiseSummary>();
+		monthWiseSummaryList = queryMonthWiseSummary(filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelType, fuelTypeList);
+		
+		List<TotalSummary> totalSummaryList =  new ArrayList<TotalSummary>();
+		totalSummaryList = queryTotalSummary(filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelType, fuelTypeList);
+		
+		// Stores the month wise summary of all facilities in the given range of year
+		HashMap<Integer, HashMap<Integer, DefaultOutputJson_custom>> facMonthWiseData = new HashMap<Integer, HashMap<Integer,DefaultOutputJson_custom>>();
+		HashMap<Integer, DefaultOutputJson_custom> genEmWaterPerMonth =  new HashMap<Integer, DefaultOutputJson_custom>();
+		for (MonthWiseSummary monthWise: monthWiseSummaryList) {
+			DefaultOutputJson_custom customObj = new DefaultOutputJson_custom();;
+			double gen = monthWise.getGeneration() != null ? Double.parseDouble(monthWise.getGeneration().trim()) : 0;
+			double em = monthWise.getEmission() != null ? Double.parseDouble(monthWise.getEmission().trim()) : 0;
+			double wc = monthWise.getWaterConsumption() != null ? Double.parseDouble(monthWise.getWaterConsumption().trim()) : 0;
+			double ww = monthWise.getWaterWithdrawal() != null ? Double.parseDouble(monthWise.getWaterWithdrawal().trim()) : 0;
+			customObj.generation = formatter.format(gen);
+			customObj.emission = formatter.format(em);
+			customObj.waterConsumption = formatter.format(wc);
+			customObj.waterWithdrawal = formatter.format(ww);
+			if (facMonthWiseData.containsKey(monthWise.getGenYear())) {
+				genEmWaterPerMonth = facMonthWiseData.get(monthWise.getGenYear());				
 			}
-			
-			// Stores the complete structure
-			Map<String, Object> completeGenEmWaterOutput = new HashMap<String, Object>();
-			totalSummaryList.get(0).setTotalEmission(totalSummaryList.get(0).getTotalEmission() != null ? formatter.format(Double.parseDouble(totalSummaryList.get(0).getTotalEmission().trim())) : "0");
-			totalSummaryList.get(0).setTotalGeneration(totalSummaryList.get(0).getTotalGeneration() != null ? formatter.format(Double.parseDouble(totalSummaryList.get(0).getTotalGeneration().trim())) : "0");
-			totalSummaryList.get(0).setTotalWaterConsumption(totalSummaryList.get(0).getTotalWaterConsumption() != null ? formatter.format(Double.parseDouble(totalSummaryList.get(0).getTotalWaterConsumption().trim())) : "0");
-			totalSummaryList.get(0).setTotalWaterWithdrawal(totalSummaryList.get(0).getTotalWaterWithdrawal() != null ? formatter.format(Double.parseDouble(totalSummaryList.get(0).getTotalWaterWithdrawal().trim())) : "0");
-			completeGenEmWaterOutput.put("Summary", totalSummaryList);
-			completeGenEmWaterOutput.put("MonthWiseSummary", facMonthWiseData);
-			completeGenEmWaterOutput.put("All Facilities", facList);
-			// Convert Map to JSON
-			try {
-				return mapper.writeValueAsString(completeGenEmWaterOutput);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-		} else {
-			
+			genEmWaterPerMonth.put(monthWise.getGenMonth(), customObj);
+			facMonthWiseData.put(monthWise.getGenYear(), genEmWaterPerMonth);
+		}
+		
+		// Stores the complete structure
+		Map<String, Object> completeGenEmWaterOutput = new HashMap<String, Object>();
+		totalSummaryList.get(0).setTotalEmission(totalSummaryList.get(0).getTotalEmission() != null ? formatter.format(Double.parseDouble(totalSummaryList.get(0).getTotalEmission().trim())) : "0");
+		totalSummaryList.get(0).setTotalGeneration(totalSummaryList.get(0).getTotalGeneration() != null ? formatter.format(Double.parseDouble(totalSummaryList.get(0).getTotalGeneration().trim())) : "0");
+		totalSummaryList.get(0).setTotalWaterConsumption(totalSummaryList.get(0).getTotalWaterConsumption() != null ? formatter.format(Double.parseDouble(totalSummaryList.get(0).getTotalWaterConsumption().trim())) : "0");
+		totalSummaryList.get(0).setTotalWaterWithdrawal(totalSummaryList.get(0).getTotalWaterWithdrawal() != null ? formatter.format(Double.parseDouble(totalSummaryList.get(0).getTotalWaterWithdrawal().trim())) : "0");
+		completeGenEmWaterOutput.put("Summary", totalSummaryList);
+		completeGenEmWaterOutput.put("MonthWiseSummary", facMonthWiseData);
+		completeGenEmWaterOutput.put("All Facilities", facList);
+		// Convert Map to JSON
+		try {
+			return mapper.writeValueAsString(completeGenEmWaterOutput);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
 		}
 
 		return "{\"Result\": \"Data not found\"}";
@@ -258,9 +256,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 			.append("from GenEmWaterView g where ( ").append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND ")
 			.append("((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) ");
 		} else {
+			String fuelTypeListString = Stream.of(fuelTypeList).collect(Collectors.joining("','", "'", "'"));
 			gewQueryBuilder.append("SELECT new com.epa.beans.SummaryData.TotalSummary (str(SUM(g.generation), 17, 2) as TotalGeneration, str(SUM(g.emissions), 17, 2) as TotalEmission, str(SUM(g.waterConsumption), 17, 2) as TotalWaterConsumption, str(SUM(g.waterWithdrawal), 17, 2) as TotalWaterWithdrawal) ")
 			.append("from GenEmWaterView g where ( ").append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND ")
-			.append(fuelType).append(" like :fuelTypeList ").append(" AND ")
+			.append(fuelType).append(" in (").append(fuelTypeListString).append(") AND ")
 			.append("((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) ");
 		}
 		Query query = session.createQuery(gewQueryBuilder.toString());
@@ -277,16 +276,26 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return totalSummaryList;
 	}
 	
-	public List<MonthWiseSummary> queryMonthWiseSummary(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
+	public List<MonthWiseSummary> queryMonthWiseSummary(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType, String[] fuelTypeList) {
 		session = HibernateUtil.getSessionFactory().openSession();
 		StringBuilder gewQueryBuilder = new StringBuilder();
 		List<MonthWiseSummary> monthWiseSummaryList =  new ArrayList<MonthWiseSummary>();
 		
-		gewQueryBuilder.append("SELECT new com.epa.beans.SummaryData.MonthWiseSummary (g.genYear, g.genMonth, str(SUM(g.generation), 17, 2) as generation, str(SUM(g.emissions), 17, 2) as emissions, str(SUM(g.waterConsumption), 17, 2) as waterConsumption, str(SUM(g.waterWithdrawal), 17, 2) as watherWithdrawal) ")
-		.append("from GenEmWaterView g where ( ").append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND ")
-		.append("((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) ")
-		.append("group by genYear, genMonth ")
-		.append("order by genYear, genMonth");
+		if (fuelTypeList[0] == "all"){
+			gewQueryBuilder.append("SELECT new com.epa.beans.SummaryData.MonthWiseSummary (g.genYear, g.genMonth, str(SUM(g.generation), 17, 2) as generation, str(SUM(g.emissions), 17, 2) as emissions, str(SUM(g.waterConsumption), 17, 2) as waterConsumption, str(SUM(g.waterWithdrawal), 17, 2) as watherWithdrawal) ")
+			.append("from GenEmWaterView g where ( ").append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND ")
+			.append("((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) ")
+			.append("group by genYear, genMonth ")
+			.append("order by genYear, genMonth");
+		} else{
+			String fuelTypeListString = Stream.of(fuelTypeList).collect(Collectors.joining("','", "'", "'"));
+			gewQueryBuilder.append("SELECT new com.epa.beans.SummaryData.MonthWiseSummary (g.genYear, g.genMonth, str(SUM(g.generation), 17, 2) as generation, str(SUM(g.emissions), 17, 2) as emissions, str(SUM(g.waterConsumption), 17, 2) as waterConsumption, str(SUM(g.waterWithdrawal), 17, 2) as watherWithdrawal) ")
+			.append("from GenEmWaterView g where ( ").append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND ")
+			.append(fuelType).append(" in (").append(fuelTypeListString).append(") AND ")
+			.append("((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) ")
+			.append("group by genYear, genMonth ")
+			.append("order by genYear, genMonth");
+		}
 		
 		Query query = session.createQuery(gewQueryBuilder.toString());
 
@@ -313,6 +322,37 @@ public class EwedApiServiceImpl implements EwedApiService {
 		
 	}
 	
+	public List<Facility> queryFacilityWithFuelType(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType, String[] fuelTypeList){
+		
+		session = HibernateUtil.getSessionFactory().openSession();
+		StringBuilder facilityQuery = new StringBuilder();
+		List<Facility> facList = new ArrayList<Facility>();
+		
+		if (fuelTypeList[0] == "all"){
+			facList = listOfFacilitiesWithinFilter(filterField, filterValue);
+		} else {
+			String fuelTypeListString = Stream.of(fuelTypeList).collect(Collectors.joining("','", "'", "'"));
+			gewQueryBuilder.append("SELECT new com.epa.beans.Facility.Facility (g.plantCode as pgmSysId, g.primaryName, g.naicsCode, g.registryId, g.facAddr, g.cityName, g.stateName, g.postalCode, g.latitude, g.longitude, g.GEOID as geoid, g.CountyState1, g.CountyState2, g.HUC8Code, g.HUC8Name, g.HUC8Acres) ")
+			.append("from GenEmWaterView g where ( ").append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND ")
+			.append(fuelType).append(" in (").append(fuelTypeListString).append(") AND ")
+			.append("((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) ");
+		}
+
+		Query query = session.createQuery(gewQueryBuilder.toString());
+
+		query.setParameter("minYear", minYear);
+		query.setParameter("maxYear", maxYear);
+		query.setParameter("minMonth", minMonth);
+		query.setParameter("maxMonth", maxMonth);
+
+		List<Facility> temp_facList = query.list();
+		facList.addAll(temp_facList); 
+		
+		System.out.println("Facilities list size = " + facList.size());
+		
+		return facList;
+	}
+
 	public List<Facility> listOfFacilitiesWithinFilter(String filterField, String filterValue){
 		
 		session = HibernateUtil.getSessionFactory().openSession();
