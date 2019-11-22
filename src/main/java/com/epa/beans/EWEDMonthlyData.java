@@ -5,6 +5,7 @@ public class EWEDMonthlyData {
 	public int year;
 	public int month;
 	public String plantType;
+	public String fuelType;
 	public String coolingSystemType;
 	public String waterType;
 	public String waterSource;

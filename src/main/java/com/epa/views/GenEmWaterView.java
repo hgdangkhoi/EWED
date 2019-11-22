@@ -82,6 +82,9 @@ public class GenEmWaterView {
 	@Column(name="plantType")
 	String plantType;
 	
+	@Column(name="fuelType")
+	String fuelType;
+	
 	@Column(name="coolingSystemType")
 	String coolingSystemType;
 	
@@ -94,6 +97,18 @@ public class GenEmWaterView {
 	@Column(name="waterSourceName")
 	String waterSourceName;
 	
+	public String getFuelType() {
+		return fuelType;
+	}
+
+
+
+	public void setFuelType(String fuelType) {
+		this.fuelType = fuelType;
+	}
+
+
+
 	public String getCoolingSystemType() {
 		return coolingSystemType;
 	}
@@ -156,38 +171,28 @@ public class GenEmWaterView {
 		super();
 	}
 
-	
+	public GenEmWaterView(String plantCode, int genYear, int genMonth,
+			String plantType, String fuelType, String coolingSystemType,
+			String waterType, String waterSource, String waterSourceName,
+			String generation, String emissions, String waterWithdrawal,
+			String waterConsumption) {
+		super();
+		this.plantCode = plantCode;
+		this.genYear = genYear;
+		this.genMonth = genMonth;
+		this.plantType = plantType;
+		this.fuelType = fuelType;
+		this.coolingSystemType = coolingSystemType;
+		this.waterType = waterType;
+		this.waterSource = waterSource;
+		this.waterSourceName = waterSourceName;
+		this.generation = generation;
+		this.emissions = emissions;
+		this.waterWithdrawal = waterWithdrawal;
+		this.waterConsumption = waterConsumption;
+	}
 
-//	public GenEmWaterView(String plantCode, int genYear, int genMonth, String primaryName, int naicsCode,
-//			float registryId, String facAddr, String cityName, String stateName, String postalCode, float latitude,
-//			float longitude, int gEOID, String countyState1, String countyState2, int hUC8Code, String hUC8Name,
-//			float hUC8Acres, String plantType, String generation, String emissions, String waterWithdrawal,
-//			String waterConsumption) {
-//		super();
-//		this.plantCode = plantCode;
-//		this.genYear = genYear;
-//		this.genMonth = genMonth;
-//		this.primaryName = primaryName;
-//		this.naicsCode = naicsCode;
-//		this.registryId = registryId;
-//		this.facAddr = facAddr;
-//		this.cityName = cityName;
-//		this.stateName = stateName;
-//		this.postalCode = postalCode;
-//		this.latitude = latitude;
-//		this.longitude = longitude;
-//		this.GEOID = gEOID;
-//		this.CountyState1 = countyState1;
-//		this.CountyState2 = countyState2;
-//		this.HUC8Code = hUC8Code;
-//		this.HUC8Name = hUC8Name;
-//		this.HUC8Acres = hUC8Acres;
-//		this.plantType = plantType;
-//		this.generation = generation;
-//		this.emissions = emissions;
-//		this.waterWithdrawal = waterWithdrawal;
-//		this.waterConsumption = waterConsumption;
-//	}
+
 
 	public GenEmWaterView(String plantCode, int genYear, int genMonth, String primaryName, int naicsCode,
 			float registryId, String facAddr, String cityName, String stateName, String postalCode, float latitude,
