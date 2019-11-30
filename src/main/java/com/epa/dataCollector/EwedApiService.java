@@ -12,7 +12,7 @@ public interface EwedApiService {
 			int maxMonth);
 
 	public String getSummaryWithin(String filterField1, String filterValue1, String filterField2, int minYear,
-			int minMonth, int maxYear, int maxMonth);
+			int minMonth, int maxYear, int maxMonth, String fuelType, String[] fuelTypeList);
 
 	public String getAllFacilities(String filterField, String filterValue);
 

@@ -946,56 +946,51 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 	public String getSummaryWithin(String filterField1, String filterValue1,
 			String filterField2, int minYear, int minMonth, int maxYear,
-			int maxMonth) {
+			int maxMonth, String fuelType, String[] fuelTypeList) {
 
-		List<Facility> facList = listOfFacilitiesWithinFilter(filterField1,
-				filterValue1);
-
-		List<String> plantCodes = new ArrayList<String>();
-		for (Facility fac : facList) {
-			plantCodes.add(fac.getPgmSysId());
-		}
-		if (plantCodes.size() == 0) {
+		List<FacilityWithSummaryData> facList = queryFacilityWithFuelType(
+				filterField, filterValue, minYear, minMonth, maxYear, maxMonth,
+				fuelType, fuelTypeList);
+		if (facList.size() == 0){
 			return "{\"Result\": \"Data not found\"}";
 		}
 
 		session = HibernateUtil.getSessionFactory().openSession();
 		StringBuilder viewQuery = new StringBuilder();
 
-		if (filterField2.equals("fuelType")) {
-			StringBuilder caseStatement = new StringBuilder();
-			caseStatement
-					.append("CASE WHEN g.plantType LIKE 'WAT-%' THEN 'WAT'")
-					.append(" WHEN g.plantType LIKE 'BIT-%' THEN 'BIT' ")
-					.append("END");
-
-			viewQuery.append("SELECT new com.epa.views.DefaultOutputJson( ")
-					.append(caseStatement)
-					.append(" AS filterName, sum(g.generation) as generation, sum(g.emissions) as emission, sum(g.waterWithdrawal) as waterWithdrawal, sum(g.waterConsumption) as waterConsumption) from com.epa.views.GenEmWaterView g where (g.plantCode in ")
-					.append(":ids")
-					.append(" and ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) Group by ")
-					.append(caseStatement);
-
-		} else {
+		if (fuelTypeList[0].equals("all")) {
 			viewQuery.append(
 					"SELECT new com.epa.views.DefaultOutputJson(cast(g.")
 					.append(filterField2)
-					.append(" as string) as filterName, sum(g.generation) as generation, sum(g.emissions) as emission, sum(g.waterWithdrawal) as waterWithdrawal, sum(g.waterConsumption) as waterConsumption) from com.epa.views.GenEmWaterView g where (g.plantCode in ")
-					.append(":ids")
-					.append(" and ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) Group by ")
+					.append(" as string) as filterName, sum(g.generation) as generation, sum(g.emissions) as emission, sum(g.waterWithdrawal) as waterWithdrawal, sum(g.waterConsumption) as waterConsumption) from com.epa.views.GenEmWaterView g where ")
+					.append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND ")				
+					.append(" ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) ")
+					.append(" GROUP BY ")
+					.append(filterField2);
+		} else {
+			String fuelTypeListString = Stream.of(fuelTypeList)
+					.collect(Collectors.joining("','", "'", "'"));
+			viewQuery.append(
+					"SELECT new com.epa.views.DefaultOutputJson(cast(g.")
+					.append(filterField2)
+					.append(" as string) as filterName, sum(g.generation) as generation, sum(g.emissions) as emission, sum(g.waterWithdrawal) as waterWithdrawal, sum(g.waterConsumption) as waterConsumption) from com.epa.views.GenEmWaterView g where ")
+					.append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND ")
+					.append(fuelType).append(" in (").append(fuelTypeListString).append(") AND ")
+					.append(" ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))) ")
+					.append(" GROUP BY ")
 					.append(filterField2);
 		}
+
 		Query query = session.createQuery(viewQuery.toString());
 
 		query.setParameter("minYear", minYear);
 		query.setParameter("maxYear", maxYear);
 		query.setParameter("minMonth", minMonth);
 		query.setParameter("maxMonth", maxMonth);
-		query.setParameterList("ids", plantCodes);
 
 		System.out.println(query);
 		List<DefaultOutputJson> results = query.list();
-		System.out.println("output list summarry = " + results.size());
+		//System.out.println("output list summarry = " + results.size());
 
 		Map<String, Object> returnData = new HashMap<String, Object>();
 
@@ -1022,33 +1017,6 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 				returnData.put(output.getFilterName(), obj);
 			}
-		}
-
-		Map<String, Object> topRecords = new HashMap<String, Object>();
-		if (filterField2.equals("plantType")) {
-			List<Top4> genList = getTop4Records(filterField1, filterValue1,
-					filterField2, "generation", minYear, minMonth, maxYear,
-					maxMonth);
-			System.out.println("genList= " + genList.size());
-			List<Top4> emList = getTop4Records(filterField1, filterValue1,
-					filterField2, "emissions", minYear, minMonth, maxYear,
-					maxMonth);
-			System.out.println("emList = " + emList.size());
-			List<Top4> wwList = getTop4Records(filterField1, filterValue1,
-					filterField2, "waterWithdrawal", minYear, minMonth, maxYear,
-					maxMonth);
-			System.out.println("wwList = " + wwList.size());
-			List<Top4> wcList = getTop4Records(filterField1, filterValue1,
-					filterField2, "waterConsumption", minYear, minMonth,
-					maxYear, maxMonth);
-			System.out.println("wcList = " + wcList.size());
-
-			topRecords.put("topGen", genList);
-			topRecords.put("topEm", emList);
-			topRecords.put("topWW", wwList);
-			topRecords.put("topWC", wcList);
-
-			returnData.put("Top_Records", topRecords);
 		}
 
 		try {
