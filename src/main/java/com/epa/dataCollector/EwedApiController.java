@@ -66,25 +66,27 @@ public class EwedApiController {
 		return apiService.getAllFacilities(filterField ,filterValue);
 	}
 	
-	@RequestMapping("/getFacilityData/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelType}/{fuelTypeList}")
+	@RequestMapping("/getFacilityData/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelTypes}/{fuelTypeList}")
 	public String getFacilityData(
 			@PathVariable(value="filterField") String filterField, 
 			@PathVariable(value="filterValue") String filterValue, 
 			@PathVariable(value="minYear") int minYear, @PathVariable(value="minMonth") int minMonth, 
 			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth,
-			@PathVariable(value="fuelType") String fuelType,
+			@PathVariable(value="fuelTypes") String fuelTypes,
 			@PathVariable(value="fuelTypeList") String[] fuelTypeList) {
-		return apiService.getFacilityData(filterField ,filterValue, minYear, minMonth, maxYear, maxMonth, fuelType, fuelTypeList);
+		return apiService.getFacilityData(filterField ,filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 	}
 	
-	@RequestMapping("/defaultViewData/{filterField}/{minYear}/{minMonth}/{maxYear}/{maxMonth}")
+	@RequestMapping("/defaultViewData/{filterField}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelTypes}/{fuelTypeList}")
 	public String defaultViewData(
 			@PathVariable(value="filterField") String filterField,  
 			@PathVariable(value="minYear") int minYear,
 			@PathVariable(value="minMonth") int minMonth,
 			@PathVariable(value="maxYear") int maxYear,
-			@PathVariable(value="maxMonth") int maxMonth){
-		return apiService.defaultGEWData(filterField, minYear,minMonth, maxYear, maxMonth);
+			@PathVariable(value="maxMonth") int maxMonth,
+			@PathVariable(value="fuelTypes") String fuelTypes,
+			@PathVariable(value="fuelTypeList") String[] fuelTypeList){
+		return apiService.defaultGEWData(filterField, minYear,minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 	}
 	
 	@RequestMapping("/getWaterAvailabilityData/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}")
@@ -96,16 +98,16 @@ public class EwedApiController {
 		return apiService.returnWaterAvailabilityFromHUCs(filterField ,filterValue, minYear, minMonth, maxYear, maxMonth);
 	}
 	
-	@RequestMapping("/getSummaryWithin/{filterField1}/{filterValue1}/{filterField2}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelType}/{fuelTypeList}")
+	@RequestMapping("/getSummaryWithin/{filterField1}/{filterValue1}/{filterField2}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelTypes}/{fuelTypeList}")
 	public String getHUCSummaryWithinState(
 			@PathVariable(value="filterField1") String filterField1, 
 			@PathVariable(value="filterValue1") String filterValue1, 
 			@PathVariable(value="filterField2") String filterField2, 
 			@PathVariable(value="minYear") int minYear, @PathVariable(value="minMonth") int minMonth, 
 			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth,
-			@PathVariable(value="fuelType") String fuelType,
+			@PathVariable(value="fuelTypes") String fuelTypes,
 			@PathVariable(value="fuelTypeList") String[] fuelTypeList) {
-		return apiService.getSummaryWithin(filterField1, filterValue1, filterField2, minYear, minMonth, maxYear, maxMonth, fuelType, fuelTypeList);
+		return apiService.getSummaryWithin(filterField1, filterValue1, filterField2, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 		}
 	
 	@RequestMapping("/processWaterAvailabilityFile/{fileName}/{startYear}/{endYear}")

@@ -4,15 +4,15 @@ public interface EwedApiService {
 
 	public String getFacility(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth);
 	
-	public String getFacilityData(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType, String[] fuelTypeList);
+	public String getFacilityData(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList);
 
-	public String defaultGEWData(String filterName, int minYear, int minMonth, int maxYear, int maxMonth);
+	public String defaultGEWData(String filterName, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList);
 
 	public String returnWaterAvailabilityFromHUCs(String filterField, String filterValue, int minYear, int minMonth, int maxYear,
 			int maxMonth);
 
 	public String getSummaryWithin(String filterField1, String filterValue1, String filterField2, int minYear,
-			int minMonth, int maxYear, int maxMonth, String fuelType, String[] fuelTypeList);
+			int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList);
 
 	public String getAllFacilities(String filterField, String filterValue);
 
