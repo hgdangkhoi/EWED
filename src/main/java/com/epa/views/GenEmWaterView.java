@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 @Entity
-@Table(name="facGenEmWaterView")
+@Table(name="facGenEmWaterView_new")
 @Immutable
 public class GenEmWaterView {
 	

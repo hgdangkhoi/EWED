@@ -28,6 +28,7 @@ import com.epa.beans.EWEDMonthlyData;
 import com.epa.beans.EWEDataReturn;
 import com.epa.beans.Facility.Facility;
 import com.epa.beans.Facility.FacilityInfo;
+import com.epa.beans.Huc.HucCodeToName;
 import com.epa.beans.SummaryData.MonthWiseSummary;
 import com.epa.beans.SummaryData.FacilityDataSummary;
 import com.epa.beans.SummaryData.FacilityWithSummaryData;
@@ -259,6 +260,30 @@ public class EwedApiServiceImpl implements EwedApiService {
 		if (filterField.equals("stateName") || filterField.equals("huc8Code")) {
 			hucCodes = getAllHUCCodes(filterField, filterValue, minYear, minMonth, maxYear, maxMonth);
 			waterAvailabilityList = getWaterAvailabilityDataList(hucCodes, minYear, minMonth, maxYear, maxMonth);
+		} else if (filterField.equals("HUC8Name")) {
+			session = HibernateUtil.getSessionFactory().openSession();
+			StringBuilder hucQuery = new StringBuilder();
+			List<HucCodeToName> huc8CodeList = new ArrayList<HucCodeToName>();
+			hucQuery.append(
+					"SELECT new com.epa.beans.Huc.HucCodeToName (g.HUC8Name, STR(g.HUC8Code)) ")
+					.append("from GenEmWaterView g where ")
+					.append(filterField).append(" like \'%").append(filterValue)
+					.append("%\'");
+			Query query = session.createQuery(hucQuery.toString());
+			System.out.println(query);
+
+			List<HucCodeToName> temp = query.list();		
+			huc8CodeList.addAll(temp);
+			for (HucCodeToName code : huc8CodeList) {
+				String huc8Code = code.getHUC8Code();
+				if (!hucCodes.contains(huc8Code))
+					hucCodes.add(code.getHUC8Code());
+			}
+			for (String huc : hucCodes) {
+				System.out.println(huc);
+			}
+			
+			waterAvailabilityList = getWaterAvailabilityDataList(hucCodes, minYear, minMonth, maxYear, maxMonth);
 		}
 		
 		// Stores the month wise summary of all facilities in the given range of
@@ -292,7 +317,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 			genEmWaterPerMonth.put(monthWise.getGenMonth(), customObj);
 			facMonthWiseData.put(monthWise.getGenYear(), genEmWaterPerMonth);
 		}
-		if (filterField.equals("stateName") || filterField.equals("huc8Code")) {
+		if (filterField.equals("stateName") || filterField.equals("huc8Code") || filterField.equals("HUC8Name")) {
 			for(WaterAvailability waData: waterAvailabilityList) {
 				
 				HashMap<Integer, DefaultOutputJson_custom> waterAvailable =  new HashMap<Integer, DefaultOutputJson_custom>();
@@ -979,42 +1004,65 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 		session = HibernateUtil.getSessionFactory().openSession();
 		List<WaterAvailability> waterAvailibilityList = new ArrayList<WaterAvailability>();
-
-		int partitionSize = 2000;
-		for (int i = 0; i < hucCodes.size(); i += partitionSize) {
-			List<String> parthucCodes = new ArrayList<String>();
-			if (hucCodes.size() < i + partitionSize)
-				parthucCodes = hucCodes.subList(i, hucCodes.size());
-			else
-				parthucCodes = hucCodes.subList(i, i + partitionSize);
-			// System.out.println("parthucCodes list size = " +
-			// parthucCodes.size());
-
+		if (hucCodes.size() == 1) {
 			StringBuilder queryBuilder = new StringBuilder();
 
 			queryBuilder.append(
 					"SELECT new com.epa.beans.WaterUsage.WaterAvailability (HUCCode, year, month, waterAvailable)")
 					.append("  from WaterAvailability")
-					.append(" where (HUCCode in (:ids) and")
+					.append(" where HUCCode = \'").append(hucCodes.get(0).trim()).append("\'")
+					.append(" and")
 					.append(" ((( year = :minYear and month >= :minMonth) OR")
 					.append(" (year > :minYear))")
 					.append(" and ((year = :maxYear and month <= :maxMonth) or (year < :maxYear))))")
 					.append(" order by HUCCode, year, month");
 			Query query = session.createQuery(queryBuilder.toString());
-
-			query.setParameterList("ids", parthucCodes);
+			
 			query.setParameter("minYear", minYear);
 			query.setParameter("maxYear", maxYear);
 			query.setParameter("minMonth", minMonth);
 			query.setParameter("maxMonth", maxMonth);
 
-			// System.out.println(query);
+			System.out.println(query);
 			List<WaterAvailability> temp_waList = query.list();
 			waterAvailibilityList.addAll(temp_waList);
+		}else {
+			int partitionSize = 2000;
+			for (int i = 0; i < hucCodes.size(); i += partitionSize) {
+				List<String> parthucCodes = new ArrayList<String>();
+				if (hucCodes.size() < i + partitionSize)
+					parthucCodes = hucCodes.subList(i, hucCodes.size());
+				else
+					parthucCodes = hucCodes.subList(i, i + partitionSize);
+				// System.out.println("parthucCodes list size = " +
+				// parthucCodes.size());
+	
+				StringBuilder queryBuilder = new StringBuilder();
+	
+				queryBuilder.append(
+						"SELECT new com.epa.beans.WaterUsage.WaterAvailability (HUCCode, year, month, waterAvailable)")
+						.append("  from WaterAvailability")
+						.append(" where (HUCCode in (:ids) and")
+						.append(" ((( year = :minYear and month >= :minMonth) OR")
+						.append(" (year > :minYear))")
+						.append(" and ((year = :maxYear and month <= :maxMonth) or (year < :maxYear))))")
+						.append(" order by HUCCode, year, month");
+				Query query = session.createQuery(queryBuilder.toString());
+	
+				query.setParameterList("ids", parthucCodes);
+				query.setParameter("minYear", minYear);
+				query.setParameter("maxYear", maxYear);
+				query.setParameter("minMonth", minMonth);
+				query.setParameter("maxMonth", maxMonth);
+	
+				System.out.println(query);
+				List<WaterAvailability> temp_waList = query.list();
+				waterAvailibilityList.addAll(temp_waList);
+			}
 		}
 		// System.out.println("all gew list size = " +
 		// waterAvailibilityList.size());
-
+		
 		return waterAvailibilityList;
 
 	}
