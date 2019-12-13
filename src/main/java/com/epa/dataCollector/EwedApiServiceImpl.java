@@ -21,6 +21,7 @@ import org.hibernate.Transaction;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.epa.beans.EWEDMonthlyData;
 import com.epa.beans.EWEDataReturn;
@@ -363,16 +364,17 @@ public class EwedApiServiceImpl implements EwedApiService {
 			return mapper.writeValueAsString(completeGenEmWaterOutput);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-		} finally {
+		} /*finally {
 			if (session.isOpen()) {	            
 	            session.close();
 	        }
-		}
+		}*/
 
 		return "{\"Result\": \"Data not found\"}";
 		// return "";
 	}
 
+	@Transactional(readOnly = true)
 	public List<TotalSummary> queryTotalSummary(String filterField,
 			String filterValue, int minYear, int minMonth, int maxYear,
 			int maxMonth, String fuelType, String[] fuelTypeList, Session session) {
@@ -439,7 +441,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return totalSummaryList;
 	}
 	
-	
+	@Transactional(readOnly = true)
 	public List<MonthWiseSummary> queryMonthWiseSummary(String filterField,
 			String filterValue, int minYear, int minMonth, int maxYear,
 			int maxMonth, String fuelType, String[] fuelTypeList, Session session) {
@@ -875,11 +877,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 			completeData.put("Total Summary", (totalSummaryList));
 		} catch (HibernateException e) {
 			e.printStackTrace();
-		} finally {
+		} /*finally {
 			if (session.isOpen()) {	            
 	            session.close();
 	        }
-		}
+		}*/
 		
 		try {
 			return mapper.writeValueAsString(completeData);
@@ -1061,11 +1063,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 			returnData.put("Summary", results);
 		} catch (HibernateException e) {
 			e.printStackTrace();
-		} finally {
+		} /*finally {
 			if (session.isOpen()) {	            
 	            session.close();
 	        }
-		}
+		}*/
 		
 		try {
 			return mapper.writeValueAsString(returnData);
