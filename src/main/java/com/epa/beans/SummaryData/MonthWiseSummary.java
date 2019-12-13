@@ -15,8 +15,15 @@ public class MonthWiseSummary {
 	private String emission;
 	private String waterConsumption;
 	private String waterWithdrawal;
+	private String waterAvailability;
 	public int getGenYear() {
 		return genYear;
+	}
+	public String getWaterAvailability() {
+		return waterAvailability;
+	}
+	public void setWaterAvailability(String waterAvailability) {
+		this.waterAvailability = waterAvailability;
 	}
 	public void setGenYear(int genYear) {
 		this.genYear = genYear;
@@ -60,6 +67,18 @@ public class MonthWiseSummary {
 		this.emission = emission;
 		this.waterConsumption = waterConsumption;
 		this.waterWithdrawal = waterWithdrawal;
+	}
+	public MonthWiseSummary(int genYear, int genMonth, String generation,
+			String emission, String waterConsumption, String waterWithdrawal,
+			String waterAvailability) {
+		super();
+		this.genYear = genYear;
+		this.genMonth = genMonth;
+		this.generation = generation;
+		this.emission = emission;
+		this.waterConsumption = waterConsumption;
+		this.waterWithdrawal = waterWithdrawal;
+		this.waterAvailability = waterAvailability;
 	}
 	@Override
 	public String toString() {
