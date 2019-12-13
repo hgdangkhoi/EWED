@@ -15,7 +15,9 @@ import com.epa.beans.GHGEmissions.EmissionsRow;
 import com.epa.beans.GHGEmissions.GasInfo;
 import com.epa.beans.GHGEmissions.LocalFacIdToORISCodeView;
 import com.epa.beans.SummaryData.MonthWiseSummary;
+import com.epa.beans.SummaryData.TotalSummary;
 import com.epa.beans.SummaryData.FacilityDataSummary;
+import com.epa.beans.SummaryData.FacilityWithSummaryData;
 import com.epa.beans.WaterUsage.WaterAvailability;
 import com.epa.beans.WaterUsage.WaterUsage;
 import com.epa.beans.WaterUsage.WaterUsagePerRegView;
@@ -55,6 +57,9 @@ public class HibernateUtil {
 	                  addAnnotatedClass(WaterAvailability.class).
 	                  addAnnotatedClass(Facility860.class).
 	                  addAnnotatedClass(FacilityDataSummary.class).
+	                  addAnnotatedClass(FacilityWithSummaryData.class).
+	                  addAnnotatedClass(MonthWiseSummary.class).
+	                  addAnnotatedClass(TotalSummary.class).
 	                  buildSessionFactory();
 	     } catch (Throwable ex) { 
 	        System.err.println("Failed to create sessionFactory object." + ex);

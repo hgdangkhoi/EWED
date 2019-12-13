@@ -18,6 +18,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -240,18 +241,18 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 		// List<Facility> facList = listOfFacilitiesWithinFilter(filterField,
 		// filterValue);
-		session = HibernateUtil.getSessionFactory().openSession();
+		//session = HibernateUtil.getSessionFactory().openSession();
 		List<FacilityWithSummaryData> facList = queryFacilityWithFuelType(
 				filterField, filterValue, minYear, minMonth, maxYear, maxMonth,
-				fuelTypes, fuelTypeList, session);
+				fuelTypes, fuelTypeList);
 		
 		List<MonthWiseSummary> monthWiseSummaryList = new ArrayList<MonthWiseSummary>();
 		monthWiseSummaryList = queryMonthWiseSummary(filterField, filterValue,
-				minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList, session);
+				minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 		totalSummaryList = queryTotalSummary(filterField, filterValue, minYear,
-				minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList, session);
+				minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 		
 		List<String> hucCodes = new ArrayList<String>();
 		List<WaterAvailability> waterAvailabilityList = new ArrayList<WaterAvailability>();
@@ -377,8 +378,9 @@ public class EwedApiServiceImpl implements EwedApiService {
 	@Transactional(readOnly = true)
 	public List<TotalSummary> queryTotalSummary(String filterField,
 			String filterValue, int minYear, int minMonth, int maxYear,
-			int maxMonth, String fuelType, String[] fuelTypeList, Session session) {
+			int maxMonth, String fuelType, String[] fuelTypeList) {
 		//session = HibernateUtil.getSessionFactory().openSession();
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
 		StringBuilder gewQueryBuilder = new StringBuilder();
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 
@@ -418,6 +420,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 		}
 		
 		try {
+			session.beginTransaction();
 			Query query = session.createQuery(gewQueryBuilder.toString());
 
 			query.setParameter("minYear", minYear);
@@ -430,7 +433,9 @@ public class EwedApiServiceImpl implements EwedApiService {
 			totalSummaryList.addAll(temp_totalSummaryList);
 			// System.out.println("totalSummaryList: " + totalSummaryList.size());
 			// System.out.println(totalSummaryList);
-
+			//if (!session.getTransaction().getStatus().equals(TransactionStatus.ACTIVE)) {
+			//	session.getTransaction().commit();
+			//}
 		} catch (HibernateException e) {
 			e.printStackTrace();
 		} /*finally {
@@ -444,8 +449,9 @@ public class EwedApiServiceImpl implements EwedApiService {
 	@Transactional(readOnly = true)
 	public List<MonthWiseSummary> queryMonthWiseSummary(String filterField,
 			String filterValue, int minYear, int minMonth, int maxYear,
-			int maxMonth, String fuelType, String[] fuelTypeList, Session session) {
+			int maxMonth, String fuelType, String[] fuelTypeList) {
 		//session = HibernateUtil.getSessionFactory().openSession();
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
 		StringBuilder gewQueryBuilder = new StringBuilder();
 		List<MonthWiseSummary> monthWiseSummaryList = new ArrayList<MonthWiseSummary>();
 
@@ -473,6 +479,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 		}
 		
 		try {
+			session.beginTransaction();
 			Query query = session.createQuery(gewQueryBuilder.toString());
 
 			query.setParameter("minYear", minYear);
@@ -484,7 +491,9 @@ public class EwedApiServiceImpl implements EwedApiService {
 			List<MonthWiseSummary> temp_monthWiseList = query.list();
 			monthWiseSummaryList.addAll(temp_monthWiseList);
 			// System.out.println("MonthWiseList: " + monthWiseSummaryList.size());
-
+			//if (!session.getTransaction().getStatus().equals(TransactionStatus.ACTIVE)) {
+			//	session.getTransaction().commit();
+			//}
 		} catch (HibernateException e) {
 			e.printStackTrace();
 		} /*finally {
@@ -508,11 +517,13 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 	}
 
+	@Transactional(readOnly = true)
 	public List<FacilityWithSummaryData> queryFacilityWithFuelType(
 			String filterField, String filterValue, int minYear, int minMonth,
-			int maxYear, int maxMonth, String fuelType, String[] fuelTypeList, Session session) {
+			int maxYear, int maxMonth, String fuelType, String[] fuelTypeList) {
 
 		//session = HibernateUtil.getSessionFactory().openSession();
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
 		StringBuilder facilityQuery = new StringBuilder();
 		// List<Facility> facList = new ArrayList<Facility>();
 		List<FacilityWithSummaryData> facList = new ArrayList<FacilityWithSummaryData>();
@@ -539,6 +550,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 		}
 
 		try {
+			session.beginTransaction();
 			Query query = session.createQuery(facilityQuery.toString());
 			query.setParameter("minYear", minYear);
 			query.setParameter("maxYear", maxYear);
@@ -548,7 +560,9 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 			List<FacilityWithSummaryData> temp_facList = query.list();
 			facList.addAll(temp_facList);
-
+			//if (!session.getTransaction().getStatus().equals(TransactionStatus.ACTIVE)) {
+			//	session.getTransaction().commit();
+			//}			
 		} catch (HibernateException e) {
 			e.printStackTrace();
 		}/* finally {
@@ -834,7 +848,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 		session = HibernateUtil.getSessionFactory().openSession();
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 		totalSummaryList = queryTotalSummary(filterName, "", minYear, minMonth,
-				maxYear, maxMonth, fuelTypes, fuelTypeList, session);
+				maxYear, maxMonth, fuelTypes, fuelTypeList);
 
 		Map<String, Object> completeData = new HashMap<String, Object>();
 
@@ -1012,14 +1026,14 @@ public class EwedApiServiceImpl implements EwedApiService {
 		session = HibernateUtil.getSessionFactory().openSession();
 		List<FacilityWithSummaryData> facList = queryFacilityWithFuelType(
 				filterField1, filterValue1, minYear, minMonth, maxYear,
-				maxMonth, fuelTypes, fuelTypeList, session);
+				maxMonth, fuelTypes, fuelTypeList);
 		if (facList.size() == 0) {
 			return "{\"Result\": \"Data not found\"}";
 		}
 
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 		totalSummaryList = queryTotalSummary(filterField1, filterValue1,
-				minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList, session);
+				minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 
 		StringBuilder viewQuery = new StringBuilder();
 
