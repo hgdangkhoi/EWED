@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class DefaultOutputJson_custom {
 	
-	public String generation;
-	public String emission;
-	public String waterConsumption;
-	public String waterWithdrawal;
+	private String generation;
+	private String emission;
+	private String waterConsumption;
+	private String waterWithdrawal;
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Transient
