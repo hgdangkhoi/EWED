@@ -1,9 +1,11 @@
-package com.epa.beans.EIAGeneration;
+package com.epa.beans.AdvancedGeneration;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import com.epa.beans.EIAGeneration.KeyItemsNewGeneration;
 
 /**
  * This class maps to the table that holds the new predicted generation for 

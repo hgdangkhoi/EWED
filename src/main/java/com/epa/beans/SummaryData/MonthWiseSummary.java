@@ -87,5 +87,9 @@ public class MonthWiseSummary {
 				+ ", waterConsumption=" + waterConsumption
 				+ ", waterWithdrawal=" + waterWithdrawal + "]";
 	}
+	public MonthWiseSummary() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
 }

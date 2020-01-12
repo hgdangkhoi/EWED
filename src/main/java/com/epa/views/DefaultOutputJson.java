@@ -1,5 +1,8 @@
 package com.epa.views;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class DefaultOutputJson {
 	
 	public String filterName;

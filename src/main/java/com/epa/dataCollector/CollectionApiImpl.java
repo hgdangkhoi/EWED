@@ -23,9 +23,16 @@ import org.springframework.web.client.RestTemplate;
 
 import com.epa.beans.CountObject;
 import com.epa.beans.ObjectList;
+import com.epa.beans.AdvancedGeneration.GenerationAeo2018No;
+import com.epa.beans.AdvancedGeneration.GenerationHighMacro;
+import com.epa.beans.AdvancedGeneration.GenerationHighPrice;
+import com.epa.beans.AdvancedGeneration.GenerationHighRT;
+import com.epa.beans.AdvancedGeneration.GenerationLowMacro;
+import com.epa.beans.AdvancedGeneration.GenerationLowPrice;
+import com.epa.beans.AdvancedGeneration.GenerationLowRT;
+import com.epa.beans.AdvancedGeneration.GenerationRef2019;
 import com.epa.beans.EIAGeneration.CompositeKeyForDominantType;
 import com.epa.beans.EIAGeneration.DominantPlantType;
-import com.epa.beans.EIAGeneration.GenerationRef2019;
 import com.epa.beans.EIAGeneration.GenerationRow;
 import com.epa.beans.EIAGeneration.GenerationSeries;
 import com.epa.beans.EIAGeneration.KeyItems;
@@ -82,6 +89,13 @@ public class CollectionApiImpl implements CollectionApiService{
 							"SWPPNO", "SWPPSO", "WECCSW", "WECCCA", "WENWPP", "WECCRKS"
 							};
 	private static ArrayList<String> allEmmCode = new ArrayList<String>(Arrays.asList(emmCode));
+	
+	//remove REF2019 because it is already done
+	private static String [] caseModels = new String[] 
+			{
+			"HIGHMACRO", "LOWMACRO", "HIGHPRICE", "LOWPRICE", "HIGHRT", "LOWRT", "AEO2018NO"
+			};
+	private static ArrayList<String> allCaseModels = new ArrayList<String>(Arrays.asList(caseModels));
 	
 	public String initiateCollectionImpl(String dbName, String returnFormat, String rowStart, String rowEnd,
 						String filterField, String filterValue,  boolean clearAndAdd ) {
@@ -181,35 +195,105 @@ public class CollectionApiImpl implements CollectionApiService{
 		int genFound = 0, genNotFound = 0;
 		
 		try {
-			for (String fuelMover : allFuelMovers) {
-				for (String emmCode : allEmmCode) {
-					GenerationSeries plant = getGenerationDataEmmCode("REF2019", fuelMover, emmCode);					
-					if(plant.getSeries() != null) {
-						Transaction tx = null;
-						tx = session.beginTransaction();
-						PlantGeneration plantGen = ((PlantGeneration) (plant.getSeries()[0]));
-						
-						for (String[] dataRow : plantGen.getData()) {								
-							GenerationRef2019 row = new GenerationRef2019();
-							KeyItemsNewGeneration keyItems = new KeyItemsNewGeneration();
-							keyItems.setFuelMover(fuelMover);
-							keyItems.setEmmCode(emmCode);
-							keyItems.setGenYear(dataRow[0]);							
-							row.setKeyTimes(keyItems);
-							row.setGenData(dataRow[1]);
-							row.setUnits(plantGen.getUnits());							
-							System.out.println(row);
+			for (String caseModel : allCaseModels) {
+				for (String fuelMover : allFuelMovers) {
+					for (String emmCode : allEmmCode) {
+						GenerationSeries plant = getGenerationDataEmmCode(caseModel, fuelMover, emmCode);					
+						if(plant.getSeries() != null) {
+							Transaction tx = null;
+							tx = session.beginTransaction();
+							PlantGeneration plantGen = ((PlantGeneration) (plant.getSeries()[0]));
 							
-							session.saveOrUpdate(row);
-							genFound++;
+							for (String[] dataRow : plantGen.getData()) {
+								KeyItemsNewGeneration keyItems = new KeyItemsNewGeneration();
+								keyItems.setFuelMover(fuelMover);
+								keyItems.setEmmCode(emmCode);
+								keyItems.setGenYear(dataRow[0]);
+								switch (caseModel) {
+									case "REF2019":{
+										GenerationRef2019 row = new GenerationRef2019();
+										row.setKeyTimes(keyItems);
+										row.setGenData(dataRow[1]);
+										row.setUnits(plantGen.getUnits());							
+										System.out.println(row);
+										
+										session.saveOrUpdate(row);
+										break;
+									}case "HIGHMACRO":{
+										GenerationHighMacro row = new GenerationHighMacro();
+										row.setKeyTimes(keyItems);
+										row.setGenData(dataRow[1]);
+										row.setUnits(plantGen.getUnits());							
+										System.out.println(row);
+										
+										session.saveOrUpdate(row);
+										break;
+									}case "LOWMACRO":{
+										GenerationLowMacro row = new GenerationLowMacro();
+										row.setKeyTimes(keyItems);
+										row.setGenData(dataRow[1]);
+										row.setUnits(plantGen.getUnits());							
+										System.out.println(row);
+										
+										session.saveOrUpdate(row);
+										break;
+									}case "HIGHPRICE":{
+										GenerationHighPrice row = new GenerationHighPrice();
+										row.setKeyTimes(keyItems);
+										row.setGenData(dataRow[1]);
+										row.setUnits(plantGen.getUnits());							
+										System.out.println(row);
+										
+										session.saveOrUpdate(row);
+										break;
+									}case "LOWPRICE":{
+										GenerationLowPrice row = new GenerationLowPrice();
+										row.setKeyTimes(keyItems);
+										row.setGenData(dataRow[1]);
+										row.setUnits(plantGen.getUnits());							
+										System.out.println(row);
+										
+										session.saveOrUpdate(row);
+										break;
+									}case "HIGHRT":{
+										GenerationHighRT row = new GenerationHighRT();
+										row.setKeyTimes(keyItems);
+										row.setGenData(dataRow[1]);
+										row.setUnits(plantGen.getUnits());							
+										System.out.println(row);
+										
+										session.saveOrUpdate(row);
+										break;
+									}case "LOWRT":{
+										GenerationLowRT row = new GenerationLowRT();
+										row.setKeyTimes(keyItems);
+										row.setGenData(dataRow[1]);
+										row.setUnits(plantGen.getUnits());							
+										System.out.println(row);
+										
+										session.saveOrUpdate(row);
+										break;
+									}case "AEO2018NO":{
+										GenerationAeo2018No row = new GenerationAeo2018No();
+										row.setKeyTimes(keyItems);
+										row.setGenData(dataRow[1]);
+										row.setUnits(plantGen.getUnits());							
+										System.out.println(row);
+										
+										session.saveOrUpdate(row);
+										break;
+									}
+								}								
+								genFound++;
+							}
+								tx.commit();	
+						} else {
+							genNotFound++;
+							System.out.println("No generation for - " + plant.getPlantCode());
 						}
-							tx.commit();	
-					} else {
-						genNotFound++;
-						System.out.println("No generation for - " + plant.getPlantCode());
 					}
-				}
-			}							
+				}	
+			}
 		} finally {
 		 session.close();
 		} 
@@ -290,7 +374,7 @@ public class CollectionApiImpl implements CollectionApiService{
 		for(int i=0 ; i<50850; i+=50) {
 			
 			try {
-				initiateCollectionImpl("facid", "json", ""+i, ""+(i+49), "", "", true);
+				initiateCollectionImpl("facid", "json", ""+i, ""+(i+49), "PGM_SYS_ACRNM", "EIA-860", true);
 			} catch (Exception e) {
 				System.out.println("Exception caught -->  " + e.getStackTrace());
 				i -= 50;
@@ -586,53 +670,93 @@ public class CollectionApiImpl implements CollectionApiService{
 	public String getAllDominantType(int startYear, int endYear) {
 				
 		Session session = HibernateUtil.getSessionFactory().openSession();
-		Query query = session.createQuery("select distinct pgmSysId from Facility");
+		Query query = session.createQuery("select distinct pgmSysId from Facility ORDER BY pgmSysId");
 		List<String> plantCodes = query.list();
 		
 		System.out.println("Total plantcodes= " + plantCodes.size());
 		
-		int partitionSize = 500;
-		for (int i = 5692; i < plantCodes.size(); i += partitionSize) {
-			List<String> partPlantCodes = new ArrayList<String>();
-			if(plantCodes.size() < i+partitionSize)
-				partPlantCodes = plantCodes.subList(i, plantCodes.size());
-			else
-				partPlantCodes = plantCodes.subList(i, i+partitionSize);
-		
-			for(int j=0; j<partPlantCodes.size(); j++) {
-				String plantCode = partPlantCodes.get(j);
-				System.out.println( "Plancode = " + plantCode);
-				
-				Map<Integer, String> yearTypeMap = new HashMap<Integer, String>();
-				Map<Integer, Double>maxYearWiseEnergyMap = new HashMap<Integer, Double>();
-		
-				for(String plantType: allPlantTypes) {
-					PlantGeneration[] plantGenerations = getPlantGenerationPlantTypeWise(plantCode, plantType,startYear,endYear);
-					if(plantGenerations != null) {
-						for(PlantGeneration plantGen: plantGenerations) {
-							String [][] data = plantGen.getData();
-							for(String[] s: data) {
-								int year = Integer.parseInt(s[0]);
-								double energy = Double.parseDouble(s[1]);
-								
-								if((maxYearWiseEnergyMap.containsKey(year) && maxYearWiseEnergyMap.get(year) < energy) || !maxYearWiseEnergyMap.containsKey(year)) {
-									maxYearWiseEnergyMap.put(year, energy);
-									yearTypeMap.put(year, plantType);
-								}	
-							}
+		for(int j=0; j<plantCodes.size(); j++) {
+			//System.out.println(plantCodes);
+			String plantCode = plantCodes.get(j);
+			System.out.println( "Plancode = " + plantCode);
+			
+			Map<Integer, String> yearTypeMap = new HashMap<Integer, String>();
+			Map<Integer, Double>maxYearWiseEnergyMap = new HashMap<Integer, Double>();
+	
+			for(String plantType: allPlantTypes) {
+				PlantGeneration[] plantGenerations = getPlantGenerationPlantTypeWise(plantCode, plantType,startYear,endYear);
+				if(plantGenerations != null) {
+					for(PlantGeneration plantGen: plantGenerations) {
+						String [][] data = plantGen.getData();
+						for(String[] s: data) {
+							int year = Integer.parseInt(s[0]);
+							double energy = Double.parseDouble(s[1]);
+							
+							if((maxYearWiseEnergyMap.containsKey(year) && maxYearWiseEnergyMap.get(year) < energy) || !maxYearWiseEnergyMap.containsKey(year)) {
+								maxYearWiseEnergyMap.put(year, energy);
+								yearTypeMap.put(year, plantType);
+							}	
 						}
 					}
 				}
-				
-				saveDominantTypeToDB(plantCode, yearTypeMap);
-				PlantdominantTypeMap.put(plantCode, yearTypeMap);
 			}
-		}
-		
+			
+			saveDominantTypeToDB(plantCode, yearTypeMap);
+			PlantdominantTypeMap.put(plantCode, yearTypeMap);
+			System.out.println("Update map: " + PlantdominantTypeMap);
+		}	
 		System.out.println("Final Map: " + PlantdominantTypeMap);
 		return PlantdominantTypeMap.toString(); 
 	}
+	
+	public String updateDominantPlantType(int startYear, int endYear) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Query query = session.createSQLQuery("SELECT distinct plantCode " + 
+				"  FROM generation " + 
+				"  where genYear = 2018 " + 
+				"  EXCEPT " + 
+				"  SELECT DISTINCT(plantcode) " + 
+				"  FROM dominantPlantType " + 
+				"  where genYear = 2018");
+		List<String> plantCodes = query.list();
+		
+		System.out.println("plantCodes = " + plantCodes);
+		System.out.println("Total plantcodes= " + plantCodes.size());
+		for(int j=0; j<plantCodes.size(); j++) {
+			//System.out.println(plantCodes);
+			String plantCode = String.valueOf(plantCodes.get(j));
+			System.out.println( "Plancode = " + plantCode);
 			
+			Map<Integer, String> yearTypeMap = new HashMap<Integer, String>();
+			Map<Integer, Double>maxYearWiseEnergyMap = new HashMap<Integer, Double>();
+	
+			for(String plantType: allPlantTypes) {
+				PlantGeneration[] plantGenerations = getPlantGenerationPlantTypeWise(plantCode, plantType,startYear,endYear);
+				if(plantGenerations != null) {
+					for(PlantGeneration plantGen: plantGenerations) {
+						String [][] data = plantGen.getData();
+						for(String[] s: data) {
+							int year = Integer.parseInt(s[0]);
+							double energy = Double.parseDouble(s[1]);
+							
+							if((maxYearWiseEnergyMap.containsKey(year) && maxYearWiseEnergyMap.get(year) < energy) || !maxYearWiseEnergyMap.containsKey(year)) {
+								maxYearWiseEnergyMap.put(year, energy);
+								yearTypeMap.put(year, plantType);
+							}	
+						}
+					}
+				}
+			}
+			
+			saveDominantTypeToDB(plantCode, yearTypeMap);
+			PlantdominantTypeMap.put(plantCode, yearTypeMap);
+			System.out.println("Update map: " + PlantdominantTypeMap);
+		}	
+		System.out.println("Final Map: " + PlantdominantTypeMap);
+		return PlantdominantTypeMap.toString(); 
+		
+	}
+	
 	public PlantGeneration[] getPlantGenerationPlantTypeWise(String plantCode, String plantType, int startYear, int endYear){
 				
 		PlantGeneration[] plantGeneration = null;

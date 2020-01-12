@@ -3,9 +3,17 @@ package com.epa.util;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import com.epa.beans.EWEDMonthlyData;
+import com.epa.beans.AdvancedGeneration.GenerationAeo2018No;
+import com.epa.beans.AdvancedGeneration.GenerationHighMacro;
+import com.epa.beans.AdvancedGeneration.GenerationHighPrice;
+import com.epa.beans.AdvancedGeneration.GenerationHighRT;
+import com.epa.beans.AdvancedGeneration.GenerationLowMacro;
+import com.epa.beans.AdvancedGeneration.GenerationLowPrice;
+import com.epa.beans.AdvancedGeneration.GenerationLowRT;
+import com.epa.beans.AdvancedGeneration.GenerationRef2019;
 import com.epa.beans.EIAGeneration.DominantPlantType;
 import com.epa.beans.EIAGeneration.GenerationPerRegistryIdView;
-import com.epa.beans.EIAGeneration.GenerationRef2019;
 import com.epa.beans.EIAGeneration.GenerationRow;
 import com.epa.beans.Facility.Facility;
 import com.epa.beans.Facility.Facility860;
@@ -23,6 +31,7 @@ import com.epa.beans.WaterUsage.WaterUsage;
 import com.epa.beans.WaterUsage.WaterUsagePerRegView;
 import com.epa.views.DefaultOutputJson;
 import com.epa.views.GenEmWaterView;
+import com.epa.views.GenEmWater_REF2019;
  
 public class HibernateUtil {
 	
@@ -60,6 +69,15 @@ public class HibernateUtil {
 	                  addAnnotatedClass(FacilityWithSummaryData.class).
 	                  addAnnotatedClass(MonthWiseSummary.class).
 	                  addAnnotatedClass(TotalSummary.class).
+	                  addAnnotatedClass(EWEDMonthlyData.class).
+	                  addAnnotatedClass(GenEmWater_REF2019.class).
+	                  addAnnotatedClass(GenerationHighMacro.class).
+	                  addAnnotatedClass(GenerationLowMacro.class).
+	                  addAnnotatedClass(GenerationHighPrice.class).
+	                  addAnnotatedClass(GenerationLowPrice.class).
+	                  addAnnotatedClass(GenerationHighRT.class).
+	                  addAnnotatedClass(GenerationLowRT.class).
+	                  addAnnotatedClass(GenerationAeo2018No.class).
 	                  buildSessionFactory();
 	     } catch (Throwable ex) { 
 	        System.err.println("Failed to create sessionFactory object." + ex);

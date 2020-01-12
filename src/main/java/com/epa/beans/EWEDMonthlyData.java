@@ -1,5 +1,8 @@
 package com.epa.beans;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class EWEDMonthlyData {
 	
 	private int year;
@@ -117,6 +120,11 @@ public class EWEDMonthlyData {
 				+ ", coolingSystemType=" + coolingSystemType + ", waterType=" + waterType + ", waterSource="
 				+ waterSource + ", waterSourceName=" + waterSourceName + ", generation=" + generation + ", emissions="
 				+ emissions + ", waterWithdrawal=" + waterWithdrawal + ", waterConsumption=" + waterConsumption + "]";
+	}
+
+	public EWEDMonthlyData() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	public EWEDMonthlyData(int year, int month, String plantType, String fuelType, String coolingSystemType, String waterType, String waterSource, String waterSourceName, String generation,

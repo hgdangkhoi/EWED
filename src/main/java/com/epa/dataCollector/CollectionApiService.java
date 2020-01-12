@@ -32,4 +32,6 @@ public interface CollectionApiService {
 	public String getEmissions();
 	
 	public String getAllDominantType(int startYear, int endYear);
+	
+	public String updateDominantPlantType(int startYear, int endYear);
 }

@@ -191,4 +191,11 @@ public class CollectionApiController {
 			@PathVariable(value="endYear") int endYear) {
 		return apiService.getAllDominantType(startYear, endYear);
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/updateDominantType/{startYear}/{endYear}")
+	public String updateDominantPlantType(
+			@PathVariable(value="startYear") int startYear,
+			@PathVariable(value="endYear") int endYear) {
+		return apiService.updateDominantPlantType(startYear, endYear);
+	}
 }

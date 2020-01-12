@@ -13,169 +13,148 @@ import org.hibernate.annotations.Immutable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 /**
  * 
- * View that holds generation, emission, water usage information per plantCode per month per year with dominant type of the plant code. 
+ * View that holds generation, emission, water usage information per plantCode
+ * per month per year with dominant type of the plant code.
  *
  */
 @Entity
-@Table(name="facGenEmWaterView_new")
+@Table(name = "facGenEmWaterView_new")
 @Immutable
 public class GenEmWaterView {
-	
+
 	@Id
-	@Column(name="plantCode")
+	@Column(name = "plantCode")
 	String plantCode;
-	
-	@Column(name="genYear")
+
+	@Column(name = "genYear")
 	int genYear;
-	
-	@Column(name="genMonth")
+
+	@Column(name = "genMonth")
 	int genMonth;
-	
+
 	@Column(name = "primaryName")
 	String primaryName;
-	
+
 	@Column(name = "naicsCode")
 	int naicsCode;
-	
+
 	@Column(name = "registryId")
 	float registryId;
 
 	@Column(name = "facAddr")
 	String facAddr;
-	
+
 	@Column(name = "cityName")
 	String cityName;
-	
+
 	@Column(name = "stateName")
 	String stateName;
-	
+
 	@Column(name = "postalCode")
 	String postalCode;
-	
+
 	@Column(name = "latitude")
 	float latitude;
-	
+
 	@Column(name = "longitude")
 	float longitude;
-	
+
 	@Column(name = "GEOID")
 	int GEOID;
-	
+
 	@Column(name = "CountyState1")
 	String CountyState1;
-	
+
 	@Column(name = "CountyState2")
 	String CountyState2;
-	
+
 	@Column(name = "HUC8Code")
 	int HUC8Code;
-	
+
 	@Column(name = "HUC8Name")
 	String HUC8Name;
-	
+
 	@Column(name = "HUC8Acres")
 	float HUC8Acres;
-	
-	@Column(name="plantType")
+
+	@Column(name = "plantType")
 	String plantType;
-	
-	@Column(name="fuelType")
+
+	@Column(name = "fuelType")
 	String fuelType;
-	
-	@Column(name="coolingSystemType")
+
+	@Column(name = "coolingSystemType")
 	String coolingSystemType;
-	
-	@Column(name="waterType")
+
+	@Column(name = "waterType")
 	String waterType;
-	
-	@Column(name="waterSource")
+
+	@Column(name = "waterSource")
 	String waterSource;
-	
-	@Column(name="waterSourceName")
+
+	@Column(name = "waterSourceName")
 	String waterSourceName;
-	
+
 	public String getFuelType() {
 		return fuelType;
 	}
-
-
 
 	public void setFuelType(String fuelType) {
 		this.fuelType = fuelType;
 	}
 
-
-
 	public String getCoolingSystemType() {
 		return coolingSystemType;
 	}
-
-
 
 	public void setCoolingSystemType(String coolingSystemType) {
 		this.coolingSystemType = coolingSystemType;
 	}
 
-
-
 	public String getWaterType() {
 		return waterType;
 	}
-
-
 
 	public void setWaterType(String waterType) {
 		this.waterType = waterType;
 	}
 
-
-
 	public String getWaterSource() {
 		return waterSource;
 	}
-
-
 
 	public void setWaterSource(String waterSource) {
 		this.waterSource = waterSource;
 	}
 
-
-
 	public String getWaterSourceName() {
 		return waterSourceName;
 	}
-
-
 
 	public void setWaterSourceName(String waterSourceName) {
 		this.waterSourceName = waterSourceName;
 	}
 
-	@Column(name="generation")
+	@Column(name = "generation")
 	String generation;
-	
-	@Column(name="emissions")
+
+	@Column(name = "emissions")
 	String emissions;
-	
-	@Column(name="waterWithdrawal")
+
+	@Column(name = "waterWithdrawal")
 	String waterWithdrawal;
-	
-	@Column(name="waterConsumption")
+
+	@Column(name = "waterConsumption")
 	String waterConsumption;
 
 	public GenEmWaterView() {
 		super();
 	}
 
-	public GenEmWaterView(String plantCode, int genYear, int genMonth,
-			String plantType, String fuelType, String coolingSystemType,
-			String waterType, String waterSource, String waterSourceName,
-			String generation, String emissions, String waterWithdrawal,
-			String waterConsumption) {
+	public GenEmWaterView(String plantCode, int genYear, int genMonth, String plantType, String fuelType, String coolingSystemType, String waterType, String waterSource, String waterSourceName,
+			String generation, String emissions, String waterWithdrawal, String waterConsumption) {
 		super();
 		this.plantCode = plantCode;
 		this.genYear = genYear;
@@ -192,14 +171,9 @@ public class GenEmWaterView {
 		this.waterConsumption = waterConsumption;
 	}
 
-
-
-	public GenEmWaterView(String plantCode, int genYear, int genMonth, String primaryName, int naicsCode,
-			float registryId, String facAddr, String cityName, String stateName, String postalCode, float latitude,
-			float longitude, int gEOID, String countyState1, String countyState2, int hUC8Code, String hUC8Name,
-			float hUC8Acres, String plantType, String coolingSystemType, String waterType, String waterSource,
-			String waterSourceName, String generation, String emissions, String waterWithdrawal,
-			String waterConsumption) {
+	public GenEmWaterView(String plantCode, int genYear, int genMonth, String primaryName, int naicsCode, float registryId, String facAddr, String cityName, String stateName, String postalCode,
+			float latitude, float longitude, int gEOID, String countyState1, String countyState2, int hUC8Code, String hUC8Name, float hUC8Acres, String plantType, String coolingSystemType,
+			String waterType, String waterSource, String waterSourceName, String generation, String emissions, String waterWithdrawal, String waterConsumption) {
 		super();
 		this.plantCode = plantCode;
 		this.genYear = genYear;
@@ -230,11 +204,8 @@ public class GenEmWaterView {
 		this.waterConsumption = waterConsumption;
 	}
 
-
-
-	public GenEmWaterView(String plantCode, int genYear, int genMonth,
-			String plantType, String coolingSystemType, String waterType, String waterSource,
-			String waterSourceName, String generation, String emissions, String waterWithdrawal, String waterConsumption) {
+	public GenEmWaterView(String plantCode, int genYear, int genMonth, String plantType, String coolingSystemType, String waterType, String waterSource, String waterSourceName, String generation,
+			String emissions, String waterWithdrawal, String waterConsumption) {
 		super();
 		this.plantCode = plantCode;
 		this.genYear = genYear;
@@ -249,7 +220,7 @@ public class GenEmWaterView {
 		this.waterWithdrawal = waterWithdrawal;
 		this.waterConsumption = waterConsumption;
 	}
-	
+
 	public String getPrimaryName() {
 		return primaryName;
 	}
@@ -258,85 +229,57 @@ public class GenEmWaterView {
 		return naicsCode;
 	}
 
-
-
 	public void setNaicsCode(int naicsCode) {
 		this.naicsCode = naicsCode;
 	}
-
-
 
 	public float getRegistryId() {
 		return registryId;
 	}
 
-
-
 	public void setRegistryId(float registryId) {
 		this.registryId = registryId;
 	}
-
-
 
 	public float getLatitude() {
 		return latitude;
 	}
 
-
-
 	public void setLatitude(float latitude) {
 		this.latitude = latitude;
 	}
-
-
 
 	public float getLongitude() {
 		return longitude;
 	}
 
-
-
 	public void setLongitude(float longitude) {
 		this.longitude = longitude;
 	}
-
-
 
 	public int getGEOID() {
 		return GEOID;
 	}
 
-
-
 	public void setGEOID(int gEOID) {
 		GEOID = gEOID;
 	}
-
-
 
 	public int getHUC8Code() {
 		return HUC8Code;
 	}
 
-
-
 	public void setHUC8Code(int hUC8Code) {
 		HUC8Code = hUC8Code;
 	}
-
-
 
 	public float getHUC8Acres() {
 		return HUC8Acres;
 	}
 
-
-
 	public void setHUC8Acres(float hUC8Acres) {
 		HUC8Acres = hUC8Acres;
 	}
-
-
 
 	public String getPlantCode() {
 		return plantCode;
@@ -365,8 +308,6 @@ public class GenEmWaterView {
 	public void setPrimaryName(String primaryName) {
 		this.primaryName = primaryName;
 	}
-
-	
 
 	public String getFacAddr() {
 		return facAddr;
@@ -416,8 +357,6 @@ public class GenEmWaterView {
 		CountyState2 = countyState2;
 	}
 
-	
-
 	public String getHUC8Name() {
 		return HUC8Name;
 	}
@@ -425,8 +364,6 @@ public class GenEmWaterView {
 	public void setHUC8Name(String hUC8Name) {
 		HUC8Name = hUC8Name;
 	}
-
-
 
 	public String getPlantType() {
 		return plantType;
@@ -470,14 +407,10 @@ public class GenEmWaterView {
 
 	@Override
 	public String toString() {
-		return "GenEmWaterView [plantCode=" + plantCode + ", genYear=" + genYear + ", genMonth=" + genMonth
-				+ ", primaryName=" + primaryName + ", naicsCode=" + naicsCode + ", registryId=" + registryId
-				+ ", facAddr=" + facAddr + ", cityName=" + cityName + ", stateName=" + stateName + ", postalCode="
-				+ postalCode + ", latitude=" + latitude + ", longitude=" + longitude + ", GEOID=" + GEOID
-				+ ", CountyState1=" + CountyState1 + ", CountyState2=" + CountyState2 + ", HUC8Code=" + HUC8Code
-				+ ", HUC8Name=" + HUC8Name + ", HUC8Acres=" + HUC8Acres + ", plantType=" + plantType + ", generation="
-				+ generation + ", emissions=" + emissions + ", waterWithdrawal=" + waterWithdrawal
-				+ ", waterConsumption=" + waterConsumption + "]";
+		return "GenEmWaterView [plantCode=" + plantCode + ", genYear=" + genYear + ", genMonth=" + genMonth + ", primaryName=" + primaryName + ", naicsCode=" + naicsCode + ", registryId=" + registryId
+				+ ", facAddr=" + facAddr + ", cityName=" + cityName + ", stateName=" + stateName + ", postalCode=" + postalCode + ", latitude=" + latitude + ", longitude=" + longitude + ", GEOID="
+				+ GEOID + ", CountyState1=" + CountyState1 + ", CountyState2=" + CountyState2 + ", HUC8Code=" + HUC8Code + ", HUC8Name=" + HUC8Name + ", HUC8Acres=" + HUC8Acres + ", plantType="
+				+ plantType + ", generation=" + generation + ", emissions=" + emissions + ", waterWithdrawal=" + waterWithdrawal + ", waterConsumption=" + waterConsumption + "]";
 	}
 
 //	@Override
@@ -491,5 +424,4 @@ public class GenEmWaterView {
 //				+ waterWithdrawal + ", waterConsumption=" + waterConsumption + "]";
 //	}
 
-	
 }

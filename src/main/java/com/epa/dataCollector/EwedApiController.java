@@ -40,6 +40,16 @@ public class EwedApiController {
 		return apiService.getFacility(filterField ,filterValue, minYear, minMonth, maxYear, maxMonth);
 	}
 	
+	@RequestMapping("/getFutureData/getFacility/{caseModel}/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}")
+	public String getFutureFacility(
+			@PathVariable(value="caseModel") String caseModel,
+			@PathVariable(value="filterField") String filterField, 
+			@PathVariable(value="filterValue") String filterValue, 
+			@PathVariable(value="minYear") int minYear, @PathVariable(value="minMonth") int minMonth, 
+			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth) {
+		return apiService.getFutureFacility(caseModel, filterField ,filterValue, minYear, minMonth, maxYear, maxMonth);
+	}
+	
 	/**
 	 * REQUIRED PARAMS - 
 	 * @param filterField
@@ -77,6 +87,42 @@ public class EwedApiController {
 		return apiService.getFacilityData(filterField ,filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 	}
 	
+	@RequestMapping("/getMonthWiseSummary/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelTypes}/{fuelTypeList}")
+	public String getMonthWiseSummary(
+			@PathVariable(value="filterField") String filterField, 
+			@PathVariable(value="filterValue") String filterValue, 
+			@PathVariable(value="minYear") int minYear, @PathVariable(value="minMonth") int minMonth, 
+			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth,
+			@PathVariable(value="fuelTypes") String fuelTypes,
+			@PathVariable(value="fuelTypeList") String[] fuelTypeList) {
+		return apiService.getMonthWiseSummary(filterField ,filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
+	}
+	
+	@RequestMapping("/getFutureData/getFacilityData/{caseModel}/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelTypes}/{fuelTypeList}")
+	public String getFutureFacilityData(
+			@PathVariable(value="caseModel") String caseModel, 
+			@PathVariable(value="filterField") String filterField, 
+			@PathVariable(value="filterValue") String filterValue, 
+			@PathVariable(value="minYear") int minYear, @PathVariable(value="minMonth") int minMonth, 
+			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth,
+			@PathVariable(value="fuelTypes") String fuelTypes,
+			@PathVariable(value="fuelTypeList") String[] fuelTypeList) {
+		return apiService.getFutureFacilityData(caseModel, filterField ,filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
+	}
+	
+	@RequestMapping("/getFutureData/getMonthWiseSummary/{caseModel}/{climateModel}/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelTypes}/{fuelTypeList}")
+	public String getFutureMonthWiseSummary(
+			@PathVariable(value="caseModel") String caseModel, 
+			@PathVariable(value="climateModel") String climateModel,
+			@PathVariable(value="filterField") String filterField, 
+			@PathVariable(value="filterValue") String filterValue, 
+			@PathVariable(value="minYear") int minYear, @PathVariable(value="minMonth") int minMonth, 
+			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth,
+			@PathVariable(value="fuelTypes") String fuelTypes,
+			@PathVariable(value="fuelTypeList") String[] fuelTypeList) {
+		return apiService.getFutureMonthWiseSummary(caseModel, climateModel, filterField ,filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
+	}
+	
 	@RequestMapping("/defaultViewData/{filterField}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelTypes}/{fuelTypeList}")
 	public String defaultViewData(
 			@PathVariable(value="filterField") String filterField,  
@@ -87,6 +133,19 @@ public class EwedApiController {
 			@PathVariable(value="fuelTypes") String fuelTypes,
 			@PathVariable(value="fuelTypeList") String[] fuelTypeList){
 		return apiService.defaultGEWData(filterField, minYear,minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
+	}
+	
+	@RequestMapping("/getFutureData/defaultViewData/{caseModel}/{filterField}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelTypes}/{fuelTypeList}")
+	public String futureDefaultViewData(
+			@PathVariable(value="caseModel") String caseModel, 
+			@PathVariable(value="filterField") String filterField,  
+			@PathVariable(value="minYear") int minYear,
+			@PathVariable(value="minMonth") int minMonth,
+			@PathVariable(value="maxYear") int maxYear,
+			@PathVariable(value="maxMonth") int maxMonth,
+			@PathVariable(value="fuelTypes") String fuelTypes,
+			@PathVariable(value="fuelTypeList") String[] fuelTypeList){
+		return apiService.futureDefaultGEWData(caseModel, filterField, minYear,minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 	}
 	
 	@RequestMapping("/getWaterAvailabilityData/{filterField}/{filterValue}/{minYear}/{minMonth}/{maxYear}/{maxMonth}")
@@ -108,6 +167,19 @@ public class EwedApiController {
 			@PathVariable(value="fuelTypes") String fuelTypes,
 			@PathVariable(value="fuelTypeList") String[] fuelTypeList) {
 		return apiService.getSummaryWithin(filterField1, filterValue1, filterField2, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
+		}
+	
+	@RequestMapping("/getFutureData/getSummaryWithin/{caseModel}/{filterField1}/{filterValue1}/{filterField2}/{minYear}/{minMonth}/{maxYear}/{maxMonth}/{fuelTypes}/{fuelTypeList}")
+	public String getFutureHUCSummaryWithinState(
+			@PathVariable(value="caseModel") String caseModel,
+			@PathVariable(value="filterField1") String filterField1, 
+			@PathVariable(value="filterValue1") String filterValue1, 
+			@PathVariable(value="filterField2") String filterField2, 
+			@PathVariable(value="minYear") int minYear, @PathVariable(value="minMonth") int minMonth, 
+			@PathVariable(value="maxYear") int maxYear, @PathVariable(value="maxMonth") int maxMonth,
+			@PathVariable(value="fuelTypes") String fuelTypes,
+			@PathVariable(value="fuelTypeList") String[] fuelTypeList) {
+		return apiService.getFutureSummaryWithin(caseModel, filterField1, filterValue1, filterField2, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 		}
 	
 	@RequestMapping("/processWaterAvailabilityFile/{fileName}/{startYear}/{endYear}")

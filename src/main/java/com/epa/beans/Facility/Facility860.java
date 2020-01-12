@@ -53,10 +53,10 @@ public class Facility860 {
 	@JsonProperty("LONGITUDE83") String longitude;
 	
 	@Column(name = "hucCode")
-	@JsonProperty("HUCCode") String hucCode;
+	@JsonProperty("DERIVED_HUC") String hucCode;
 	
 	@Column(name = "fipsCode")
-	@JsonProperty("fipsCode") String fipsCode;
+	@JsonProperty("FIPS_CODE") String fipsCode;
 	
 	
 	public Facility860() {
