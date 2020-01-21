@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * DEPRECATED - NOT USED ANYMORE
  * Base class for facility information.
  * This stores information per registryId.
  *

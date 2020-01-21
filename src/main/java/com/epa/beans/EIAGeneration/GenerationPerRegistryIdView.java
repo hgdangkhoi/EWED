@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
 /**
+ * DEPRECATED - NOT USED ANYMORE
  * This class is mapped to a view that holds 
  * generation value per registryId per year
  *

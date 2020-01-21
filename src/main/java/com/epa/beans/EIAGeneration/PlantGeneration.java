@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * DEPRECATED - NOT USED ANYMORE
  * This is the base class that can map for generation. 
  * This is a deprecated form of mapping since
  * GenerationRow has superceeded it. This can be used as a 

@@ -135,9 +135,8 @@ public class CollectionApiController {
 	}
 	
 	/**
-	 * This function is used to get generation data on all the facilities 
-	 * currently present in the mapped facility table based upon their plant codes. 
-	 * They call the afore mentioned get generation data function to get information on each plant.
+	 * This function is used to get generation data on all the predicted future models
+	 * EX: REF2019, HIGHMACRO, etc
 	 * 
 	 * @return String delineating number of facilities whose generation were found
 	 * and not found.
@@ -192,6 +191,9 @@ public class CollectionApiController {
 		return apiService.getAllDominantType(startYear, endYear);
 	}
 	
+	/**
+	 * Utility function to update the missing dominant plant type when comparing to generation table
+	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/updateDominantType/{startYear}/{endYear}")
 	public String updateDominantPlantType(
 			@PathVariable(value="startYear") int startYear,
