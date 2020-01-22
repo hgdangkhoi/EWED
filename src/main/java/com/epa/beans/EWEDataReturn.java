@@ -1,6 +1,7 @@
 package com.epa.beans;
 
 /**
+ * DEPRECATED - NO LONGER USED
  * This transient object only materializes to ensure that 
  * the form and type of json returned for facility summary
  * remains consistent. This ensures that the front end does

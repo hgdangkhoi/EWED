@@ -2,6 +2,13 @@ package com.epa.beans.SummaryData;
 
 import org.springframework.stereotype.Component;
 
+/*
+ * Data Structure to query the summary data of the facility:
+ * Generation, emission, water consumption and withdrawal,
+ * most recent planttype, fueltype, cooling system type, water source, water source name
+ *  
+ * Mainly used in /getFacility API 
+ */
 @Component
 public class FacilityDataSummary {
 	private String plantType;

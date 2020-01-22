@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * 
+ * NOT SURE IF STILL USED
  * Base table that holds water usage information per plantCode
  *
  */

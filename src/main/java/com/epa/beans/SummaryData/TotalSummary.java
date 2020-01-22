@@ -4,7 +4,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * 
- * Struct to store TotalSummary data
+ * Struct to store TotalSummary data, mainly used to query the sum of all the data:
+ * Generation, Emission, Water Consumption, Water Withdrawal
  *
  */
 @Component

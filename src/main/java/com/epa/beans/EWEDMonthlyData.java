@@ -1,7 +1,11 @@
 package com.epa.beans;
 
+
 import org.springframework.stereotype.Component;
 
+/**
+ * Return the monthly data of a particular facility
+ */
 @Component
 public class EWEDMonthlyData {
 	

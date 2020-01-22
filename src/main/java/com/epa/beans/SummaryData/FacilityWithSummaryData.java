@@ -7,6 +7,11 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/*
+ * Data Structure to query the relevant summary info of the facility such as:
+ * pgm_sys_id, primary name, address, etc...
+ * 
+ */
 @Component
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility=JsonAutoDetect.Visibility.NONE,
 setterVisibility=JsonAutoDetect.Visibility.NONE, creatorVisibility=JsonAutoDetect.Visibility.NONE)

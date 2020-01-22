@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * 
+ * DEPRECATED - NO LONGER USED
  * Old implementation of mapping emissions data. 
  * May be used for reference to map such jsons.
  *

@@ -3,6 +3,9 @@ package com.epa.util;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * This class hold all the constants that need to construct the web service API to pull the data 
+ */
 public class EPAConstants {
 
 	public static Map<String, String> dbNameMap = new HashMap<String, String>();

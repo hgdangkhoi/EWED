@@ -17,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  * View that holds generation, emission, water usage information per plantCode
  * per month per year with dominant type of the plant code.
+ * Used for the BIG view of the advanced system, each generation scenario
+ * will have its own big view
  *
  */
 @Entity

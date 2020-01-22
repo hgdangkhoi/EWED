@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 
- * Struct to store MonthWiseSummary data
+ * Struct to store MonthWiseSummary data, mainly used in /getMonthWiseSummary API
  *
  */
 @Component

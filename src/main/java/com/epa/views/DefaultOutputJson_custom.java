@@ -4,6 +4,11 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+/*
+ * Structure to hold generation, emission, water Consumption, water Withdrawal
+ * and water availability 
+ * Mainly used for /getMonthWiseSummary API
+ */
 public class DefaultOutputJson_custom {
 	
 	private String generation;

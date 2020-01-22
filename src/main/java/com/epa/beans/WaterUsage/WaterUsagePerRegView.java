@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
 /**
- * 
+ * DEPRECATED - NO LONGER USED
  * View that holds water usage information per registryId. 
  * All pgmSysId water usages are summed up per registryId.
  *

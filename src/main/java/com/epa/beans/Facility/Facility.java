@@ -10,7 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This table corresponds to the facility860 table with 
+ * This table corresponds to the facility860 table with updated values using various
+ * information provided by Dr.Fulton or by manually processed by scripts
  */
 @Entity
 @Table(name="facility860C")

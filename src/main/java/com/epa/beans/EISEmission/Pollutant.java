@@ -3,6 +3,7 @@ package com.epa.beans.EISEmission;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * DEPRECATED - NO LONGER USED
  * Deprecated class for old emissions implementation
  */
 public class Pollutant {

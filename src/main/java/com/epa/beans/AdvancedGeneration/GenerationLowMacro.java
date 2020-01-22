@@ -9,7 +9,7 @@ import com.epa.beans.EIAGeneration.KeyItemsNewGeneration;
 
 /**
  * This class maps to the table that holds the new predicted generation for 
- * case REF2019
+ * case LOWMACRO
  *
  */
 

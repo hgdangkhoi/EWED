@@ -90,10 +90,10 @@ public class CollectionApiImpl implements CollectionApiService{
 							};
 	private static ArrayList<String> allEmmCode = new ArrayList<String>(Arrays.asList(emmCode));
 	
-	//remove REF2019 because it is already done
+	
 	private static String [] caseModels = new String[] 
 			{
-			"HIGHMACRO", "LOWMACRO", "HIGHPRICE", "LOWPRICE", "HIGHRT", "LOWRT", "AEO2018NO"
+			"REF2019", "HIGHMACRO", "LOWMACRO", "HIGHPRICE", "LOWPRICE", "HIGHRT", "LOWRT", "AEO2018NO"
 			};
 	private static ArrayList<String> allCaseModels = new ArrayList<String>(Arrays.asList(caseModels));
 	
@@ -190,6 +190,10 @@ public class CollectionApiImpl implements CollectionApiService{
 		return plant;
 	}
 	
+	/*
+	 * This method loop through all the 8 different case scenarios and pull the advanced system
+	 * generation data
+	 */
 	public String getFutureGeneration() {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		int genFound = 0, genNotFound = 0;
@@ -322,6 +326,7 @@ public class CollectionApiImpl implements CollectionApiService{
 		return pollutantsList.toString();
 	}
 	
+	@Deprecated
 	public String getGreenhouseGasInfo(String gasId) {
 		
 		StringBuilder urlBuilder = new StringBuilder();

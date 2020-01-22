@@ -53,6 +53,9 @@ public class EwedApiServiceImpl implements EwedApiService {
 	public Session session;
 	NumberFormat formatter = new DecimalFormat("########");
 
+	/*
+	 * /getFacility API
+	 */
 	@Override
 	public String getFacility(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
 
@@ -65,15 +68,12 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 		// query monthly data
 		List<EWEDMonthlyData> monthlyDataList = queryMonthlyData(null, plantCodes, minYear, minMonth, maxYear, maxMonth);
-
+		
+		// query the data summary of the facility
 		List<FacilityDataSummary> facilityDataSummaryList = new ArrayList<FacilityDataSummary>();
 		facilityDataSummaryList = queryFacilityDataSummary(null, filterField, filterValue, minYear, minMonth, maxYear, maxMonth);
 
 		LinkedHashMap<Object, Object> facilityReturnMap = new LinkedHashMap<Object, Object>();
-		facilityDataSummaryList.get(0).setEmissionSummary(facilityDataSummaryList.get(0).getEmissionSummary());
-		facilityDataSummaryList.get(0).setGenerationSummary(facilityDataSummaryList.get(0).getGenerationSummary());
-		facilityDataSummaryList.get(0).setWaterConsumptionSummary(facilityDataSummaryList.get(0).getWaterConsumptionSummary());
-		facilityDataSummaryList.get(0).setWaterWithdrawalSummary(facilityDataSummaryList.get(0).getWaterWithdrawalSummary());
 		facilityReturnMap.put("Facility", facList);
 		facilityReturnMap.put("MonthlyData", monthlyDataList);
 		facilityReturnMap.put("FacilityDataSummary", facilityDataSummaryList);
@@ -86,9 +86,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 		}
 
 		return "{\"Result\": \"Data not found\"}";
-		// return "";
 	}
 
+	/*
+	 * /getFacility API for advanced system
+	 */
 	@Override
 	public String getFutureFacility(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
 
@@ -102,6 +104,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 		// query monthly data
 		List<EWEDMonthlyData> monthlyDataList = queryMonthlyData(caseModel, plantCodes, minYear, minMonth, maxYear, maxMonth);
 
+		// query the data summary of the facility
 		List<FacilityDataSummary> facilityDataSummaryList = new ArrayList<FacilityDataSummary>();
 		facilityDataSummaryList = queryFacilityDataSummary(caseModel, filterField, filterValue, minYear, minMonth, maxYear, maxMonth);
 
@@ -118,9 +121,13 @@ public class EwedApiServiceImpl implements EwedApiService {
 		}
 
 		return "{\"Result\": \"Data not found\"}";
-		// return "";
 	}
 
+	/*
+	 * method to query the data summary for a facility
+	 * if @param caseModel is null, it is used for historical system
+	 * if @param caseModel is nonnull, it is used for advanced system 
+	 */
 	@Transactional(readOnly = true)
 	public List<FacilityDataSummary> queryFacilityDataSummary(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
 		session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -168,6 +175,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return monthlyDataSummaryList;
 	}
 
+	/*
+	 * DEPRECATED - NO LONGER USED
+	 */
+	@Deprecated 
 	public String getEWEData(List<String> registryIds, int minYear, int maxYear) {
 		EWEDataReturn returnData = new EWEDataReturn();
 
@@ -212,6 +223,9 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return EPAConstants.genericErrorReturn;
 	}
 
+	/*
+	 * /getFacilityData API
+	 */
 	@Override
 	public String getFacilityData(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
 
@@ -236,6 +250,36 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return "{\"Result\": \"Data not found\"}";
 	}
 	
+	/*
+	 * /getFacilityData API for advanced system
+	 */
+	@Override
+	public String getFutureFacilityData(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes,
+			String[] fuelTypeList) {
+		// get the facilities
+		List<FacilityWithSummaryData> facList = queryFacilityWithFuelType(caseModel, filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
+
+		// get totalSummary
+		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
+		totalSummaryList = queryTotalSummary(caseModel, filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
+		
+		// Stores the complete structure
+		Map<String, Object> completeGenEmWaterOutput = new HashMap<String, Object>();
+		completeGenEmWaterOutput.put("Summary", totalSummaryList);
+		completeGenEmWaterOutput.put("All Facilities", facList);
+		// Convert Map to JSON
+		try {
+			return mapper.writeValueAsString(completeGenEmWaterOutput);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+
+		return "{\"Result\": \"Data not found\"}";
+	}
+	
+	/*
+	 * /getMonthWiseSummary API 
+	 */
 	@Override
 	public String getMonthWiseSummary(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
 
@@ -256,10 +300,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 			waterAvailabilityList = getWaterAvailabilityDataList(null, hucCodes, minYear, minMonth, maxYear, maxMonth);
 		}
 
-		// Stores the month wise summary of all facilities in the given range of
-		// year
+		// Stores the month wise summary of all facilities in the given range of year
 		HashMap<Integer, HashMap<Integer, DefaultOutputJson_custom>> facMonthWiseData = new HashMap<Integer, HashMap<Integer, DefaultOutputJson_custom>>();
 		HashMap<Integer, DefaultOutputJson_custom> genEmWaterPerMonth = new HashMap<Integer, DefaultOutputJson_custom>();
+		
+		// restructure the monthWiseSummary json because front-end wants too ¯\_(ツ)_/¯
 		for (MonthWiseSummary monthWise : monthWiseSummaryList) {
 			DefaultOutputJson_custom customObj = new DefaultOutputJson_custom();
 
@@ -328,30 +373,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 		return "{\"Result\": \"Data not found\"}";
 	}
-
-	public String getFutureFacilityData(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes,
-			String[] fuelTypeList) {
-		// get the facilities
-		List<FacilityWithSummaryData> facList = queryFacilityWithFuelType(caseModel, filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
-
-		// get totalSummary
-		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
-		totalSummaryList = queryTotalSummary(caseModel, filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
-		
-		// Stores the complete structure
-		Map<String, Object> completeGenEmWaterOutput = new HashMap<String, Object>();
-		completeGenEmWaterOutput.put("Summary", totalSummaryList);
-		completeGenEmWaterOutput.put("All Facilities", facList);
-		// Convert Map to JSON
-		try {
-			return mapper.writeValueAsString(completeGenEmWaterOutput);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-
-		return "{\"Result\": \"Data not found\"}";
-	}
 	
+	/*
+	 * /getMonthWiseSummary API for advanced system
+	 */
+	@Override
 	public String getFutureMonthWiseSummary(String caseModel, String climateModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes,
 			String[] fuelTypeList) {
 		// get monthWise summary
@@ -450,6 +476,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return "{\"Result\": \"Data not found\"}";
 	}
 
+	/*
+	 * method to query the total sum 
+	 * if @param caseModel is null, it is used for historical system
+	 * if @param caseModel is nonnull, it is used for advanced system 
+	 */
 	@Transactional(readOnly = true)
 	public List<TotalSummary> queryTotalSummary(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType,
 			String[] fuelTypeList) {
@@ -519,6 +550,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return totalSummaryList;
 	}
 
+	/*
+	 * Method to query the monthWiseSummary
+	 * if @param caseModel is null, it is used for historical system
+	 * if @param caseModel is nonnull, it is used for advanced system  
+	 */
 	@Transactional(readOnly = true)
 	public List<MonthWiseSummary> queryMonthWiseSummary(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType,
 			String[] fuelTypeList) {
@@ -592,6 +628,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 	}
 
+	/*
+	 * Method to filter the facilities using the fuelType
+	 * if @param caseModel is null, it is used for historical system
+	 * if @param caseModel is nonnull, it is used for advanced system  
+	 */
 	@Transactional(readOnly = true)
 	public List<FacilityWithSummaryData> queryFacilityWithFuelType(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType,
 			String[] fuelTypeList) {
@@ -651,6 +692,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return facList;
 	}
 
+	/*
+	 * filter the facilities using filterField with value
+	 * Example: query by stateName = "California"
+	 */
 	@Transactional(readOnly = true)
 	public List<Facility> listOfFacilitiesWithinFilter(String filterField, String filterValue) {
 		session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -670,6 +715,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return facList;
 	}
 
+	/*
+	 * Method to query the monthly data
+	 * if @param caseModel is null, it is used for historical system
+	 * if @param caseModel is nonnull, it is used for advanced system
+	 * */
 	@Transactional(readOnly = true)
 	public List<EWEDMonthlyData> queryMonthlyData(String caseModel, List<String> plantCodes, int minYear, int minMonth, int maxYear, int maxMonth) {
 		session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -714,6 +764,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 	}
 
+	/*
+	 * DEPRECATED - NEVER USED 
+	 */
+	@Deprecated
 	public List<GenEmWaterView> queryGEWView(List<String> plantCodes, int minYear, int minMonth, int maxYear, int maxMonth) {
 
 		session = HibernateUtil.getSessionFactory().openSession();
@@ -752,8 +806,12 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return gewList;
 	}
 
+	/*
+	 * /defaultView API
+	 * */
 	@Transactional(readOnly = true)
 	public String defaultGEWData(String filterName, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
+		// query the total summary
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 		totalSummaryList = queryTotalSummary(null, filterName, "", minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 
@@ -801,8 +859,14 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return "{\"Result\": \"Data not found\"}";
 	}
 	
+	/*
+	 * /defaultView API for advanced system
+	 * if @param caseModel is null, it is used for historical system
+	 * if @param caseModel is nonnull, it is used for advanced system
+	 * */
 	@Transactional(readOnly = true)
 	public String futureDefaultGEWData(String caseModel, String filterName, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
+		// get the total summary
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 		totalSummaryList = queryTotalSummary(caseModel, filterName, "", minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 
@@ -852,7 +916,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 	}
 
-	// end-point to get water availability json output
+	/* 
+	 * DEPRECATED - NEVER USED
+	 */
+	@Deprecated
 	public String returnWaterAvailabilityFromHUCs(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
 		List<String> hucCodes = new ArrayList<String>();
 		hucCodes = getAllHUCCodes(filterField, filterValue, minYear, minMonth, maxYear, maxMonth);
@@ -882,6 +949,9 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 	}
 
+	/*
+	 * Method to get the HUC8Code from HUC8Name
+	 * */
 	@Transactional(readOnly = true)
 	public List<String> getHUCCodesFromName(String filterField, String filterValue) {
 		session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -905,6 +975,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return hucCodes;
 	}
 
+	/*
+	 * method to get all HUC8Codes from filterField by filterValue
+	 * Example: get all HUC8Codes from stateName = 'California'
+	 * */
 	@Transactional(readOnly = true)
 	public List<String> getAllHUCCodes(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
 		// allowed filterField - state and Huc
@@ -932,6 +1006,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return hucCodes;
 	}
 
+	/*
+	 * method to query water availability from the HUC lists 
+	 * if @param climateModel is null, it is used for historical system
+	 * if @param climateModel is nonnull, it is used for advanced system
+	 */
 	@Transactional(readOnly = true)
 	public List<WaterAvailability> getWaterAvailabilityDataList(String climateModel, List<String> hucCodes, int minYear, int minMonth, int maxYear, int maxMonth) {
 		session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -1009,7 +1088,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return waterAvailibilityList;
 
 	}
-
+	
+	/*
+	 * getSummaryWithin API
+	 * */
 	@Transactional(readOnly = true)
 	public String getSummaryWithin(String filterField1, String filterValue1, String filterField2, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
 		session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -1063,6 +1145,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return "{\"Result\": \"Data not found\"}";
 	}
 	
+	/*
+	 * getSummaryWithin API for advanced system
+	 * if @param caseModel is null, it is used for historical system
+	 * if @param caseModel is nonnull, it is used for advanced system
+	 * */
 	@Transactional(readOnly = true)
 	public String getFutureSummaryWithin(String caseModel, String filterField1, String filterValue1, String filterField2, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
 		session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -1118,6 +1205,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return "{\"Result\": \"Data not found\"}";
 	}
 
+	/*
+	 * DEPRECATED - NO LONGER USED
+	 * */
+	@Deprecated
 	public List<Top4> getTop4Records(String filterField1, String filterValue1, String filterField2, String totalOf, int minYear, int minMonth, int maxYear, int maxMonth) {
 
 		session = HibernateUtil.getSessionFactory().openSession();
@@ -1166,6 +1257,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return listOfTop4;
 	}
 
+	/*
+	 * DEPRECATED - NO LONGER USED
+	 */
+	@Deprecated
 	@Override
 	public String processWaterAvailabilityFile(String fileName, int startYear, int endYear) {
 

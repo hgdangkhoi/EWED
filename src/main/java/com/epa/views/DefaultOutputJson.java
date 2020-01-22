@@ -2,6 +2,11 @@ package com.epa.views;
 
 import org.springframework.stereotype.Component;
 
+/*
+ * Structure to hold generation, emission, water Consumption, water Withdrawal
+ * Note: This structure does not have water availability 
+ */
+
 @Component
 public class DefaultOutputJson {
 	

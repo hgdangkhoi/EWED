@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 public class EmissionsKey implements Serializable{
 
 	/**
-	 * 
+	 * Feel like this is DEPRECATED
 	 */
 	private static final long serialVersionUID = -979102299038558768L;
 

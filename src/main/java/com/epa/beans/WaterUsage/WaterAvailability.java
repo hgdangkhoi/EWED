@@ -7,6 +7,9 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/*
+ * Table to store the water Availability 
+ */
 @Entity
 @Table(name="waterAvailability")
 public class WaterAvailability {

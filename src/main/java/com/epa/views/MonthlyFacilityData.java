@@ -6,6 +6,9 @@ import java.util.Map;
 import com.epa.beans.EWEDMonthlyData;
 import com.epa.beans.Facility.Facility;
 
+/*
+ * DEPRECATED - NO LONGER USED 
+ */
 public class MonthlyFacilityData {
 	
 	public Facility facility;

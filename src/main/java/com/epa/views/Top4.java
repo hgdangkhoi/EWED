@@ -1,5 +1,8 @@
 package com.epa.views;
 
+/*
+ * DEPRECATED - NO LONGER USED 
+ */
 public class Top4 {
 	
 	private String plantType;

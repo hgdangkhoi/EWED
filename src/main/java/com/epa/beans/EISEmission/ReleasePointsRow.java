@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * DEPRECATED - NO LONGER USED
  * Deprecated class for old emissions implementation
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
