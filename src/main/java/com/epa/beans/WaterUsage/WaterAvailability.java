@@ -32,9 +32,8 @@ public class WaterAvailability {
 		super();
 	}
 
-	public WaterAvailability(String hUCCode, int year, int month, String waterAvailable) {
+	public WaterAvailability(int year, int month, String waterAvailable) {
 		super();
-		HUCCode = hUCCode;
 		this.year = year;
 		this.month = month;
 		this.waterAvailable = waterAvailable;
