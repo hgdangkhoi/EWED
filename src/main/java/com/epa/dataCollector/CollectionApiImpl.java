@@ -21,7 +21,6 @@ import org.hibernate.Transaction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.epa.beans.CountObject;
 import com.epa.beans.ObjectList;
 import com.epa.beans.AdvancedGeneration.GenerationAeo2018No;
 import com.epa.beans.AdvancedGeneration.GenerationHighMacro;
@@ -38,7 +37,6 @@ import com.epa.beans.EIAGeneration.GenerationSeries;
 import com.epa.beans.EIAGeneration.KeyItems;
 import com.epa.beans.EIAGeneration.KeyItemsNewGeneration;
 import com.epa.beans.EIAGeneration.PlantGeneration;
-import com.epa.beans.EISEmission.Pollutant;
 import com.epa.beans.Facility.Facility860;
 import com.epa.beans.GHGEmissions.Emissions;
 import com.epa.beans.GHGEmissions.EmissionsData;
@@ -57,7 +55,7 @@ public class CollectionApiImpl implements CollectionApiService{
 	private static RestTemplate restTemplate = EnviroFactsUtil.getRestTemplate();
 	private static ObjectList<Facility860> facList = new ObjectList<Facility860>();
 	private static ObjectList<Emissions> emissionsList = new ObjectList<Emissions>();
-	private static ObjectList<Pollutant> pollutantsList = new ObjectList<Pollutant>();
+
 	private static ObjectList<GasInfo> gasInfoList = new ObjectList<GasInfo>();
 	
 	private static Map<String, Emissions> emissionsMap = new HashMap<String, Emissions>();
@@ -305,26 +303,6 @@ public class CollectionApiImpl implements CollectionApiService{
 		return "genFound = " + genFound + " genNotFound = " + genNotFound;
 	}
 	
-	@Deprecated
-	public String getPollutantInfoImpl(String pollutantCode) {
-		
-		StringBuilder urlBuilder = new StringBuilder();
-		urlBuilder.append(EPAConstants.enviroFactsBaseURL).append("pollutant");
-		
-		if(!pollutantCode.equals(""))
-			urlBuilder.append(EPAConstants.enviroFactsBaseURL).append("/pollutant/pollutant_code/").append(pollutantCode);
-		
-		urlBuilder.append("/json");
-		
-		System.out.println(urlBuilder.toString());
-		
-		Pollutant[] pollutant = restTemplate.getForObject(urlBuilder.toString() , Pollutant[].class);
-		
-		for(Pollutant p : pollutant)
-			pollutantsList.objectList.add(p);
-		
-		return pollutantsList.toString();
-	}
 	
 	@Deprecated
 	public String getGreenhouseGasInfo(String gasId) {
@@ -363,13 +341,6 @@ public class CollectionApiImpl implements CollectionApiService{
 		return gasInfoList.toString() + "Stored";
 	}
 	
-	public int getCount(String tableName) {
-		
-		CountObject[] count = restTemplate.getForObject(EPAConstants.enviroFactsBaseURL
-				+ tableName + "/json/count" , CountObject[].class);
-		
-		return count[0].count;
-	}
 	
 	public String getData() {
 			
@@ -397,8 +368,8 @@ public class CollectionApiImpl implements CollectionApiService{
 					newFacilityList.add(fac);
 				
 					System.out.println("Inserting ---- " + fac.toString());
-					//session.saveOrUpdate(fac);
-					session.save(fac);
+					session.saveOrUpdate(fac);
+					//session.save(fac);
 					session.flush();
 					session.refresh(fac);
 					
@@ -428,7 +399,6 @@ public class CollectionApiImpl implements CollectionApiService{
 	public boolean clearLists() {
 		facList.objectList.clear();
 		emissionsList.objectList.clear();
-		pollutantsList.objectList.clear();
 		gasInfoList.objectList.clear();
 	
 		return true;
@@ -440,7 +410,7 @@ public class CollectionApiImpl implements CollectionApiService{
 		int genFound = 0, genNotFound = 0;
 		
 		try {
-			Query query = session.createQuery("select distinct pgmSysId from Facility");
+			Query query = session.createQuery("select distinct pgmSysId from Facility860");
 			List<String> list = query.list();
 			
 			for(String plantCode : list) {
@@ -574,7 +544,7 @@ public class CollectionApiImpl implements CollectionApiService{
 			try {
 				tx = session.beginTransaction();
 				System.out.println("Inserting ---- " + fac.toString());
-				session.save(fac);
+				session.saveOrUpdate(fac);
 				
 		        tx.commit();
 			 } catch (HibernateException e) {
@@ -814,4 +784,5 @@ public class CollectionApiImpl implements CollectionApiService{
 		return "Done";
 		
 	}
+
 }

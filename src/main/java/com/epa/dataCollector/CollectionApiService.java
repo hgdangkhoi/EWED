@@ -11,11 +11,7 @@ public interface CollectionApiService {
 	
 	public GenerationSeries getGenerationDataEmmCode(String caseDescription, String fuelMover, String emmCode);
 	
-	public String getPollutantInfoImpl(String pollutantCode);
-	
 	public String getGreenhouseGasInfo(String gasId);
-	
-	public int getCount(String tableName);
 	
 	public String getData();
 	

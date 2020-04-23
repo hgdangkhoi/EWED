@@ -17,7 +17,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * done in order to avoid such conflicts. 
  */
 @Entity
-@Table(name="facility860")
+//@Table(name="facility860")
+@Table(name="facility860_newFac")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Facility860 {
 

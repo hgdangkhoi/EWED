@@ -13,7 +13,8 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name="generation")
+//@Table(name="generation")
+@Table(name="generation_newFac")
 public class GenerationRow {
 	
 	@Column(name = "plantName")

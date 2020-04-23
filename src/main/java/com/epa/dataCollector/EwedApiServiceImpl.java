@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.*;
 
 import org.hibernate.HibernateException;
@@ -25,9 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.epa.beans.EWEDMonthlyData;
-import com.epa.beans.EWEDataReturn;
 import com.epa.beans.Facility.Facility;
-import com.epa.beans.Facility.FacilityInfo;
 import com.epa.beans.Huc.HucCodeToName;
 import com.epa.beans.SummaryData.MonthWiseSummary;
 import com.epa.beans.SummaryData.FacilityDataSummary;
@@ -42,6 +41,7 @@ import com.epa.views.DefaultOutputJson_custom;
 import com.epa.views.GenEmWaterView;
 import com.epa.views.Top4;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
 
@@ -50,7 +50,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 
 	// Object mapper is used to convert objects to jsons
 	@Autowired
-	ObjectMapper mapper;
+	ObjectMapper mapper = new ObjectMapper();
 	public Session session;
 	SessionManager sessionManager = new SessionManager();
 	NumberFormat formatter = new DecimalFormat("########");
@@ -59,9 +59,12 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 * /getFacility API
 	 */
 	@Override
+	//@Transactional(readOnly = true)
 	public String getFacility(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
-
-		// query facility
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		
+		// query facility		
 		List<Facility> facList = listOfFacilitiesWithinFilter(filterField, filterValue);
 		List<String> plantCodes = new ArrayList<String>();
 		for (Facility fac : facList) {
@@ -94,8 +97,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 * /getFacility API for advanced system
 	 */
 	@Override
+	//@Transactional(readOnly = true)
 	public String getFutureFacility(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
-
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
 		// query facility
 		List<Facility> facList = listOfFacilitiesWithinFilter(filterField, filterValue);
 		List<String> plantCodes = new ArrayList<String>();
@@ -132,7 +137,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 */
 	//@Transactional(readOnly = true)
 	public List<FacilityDataSummary> queryFacilityDataSummary(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//session = HibernateUtil.getSessionFactory().getCurrentSession();
 		StringBuilder gewQueryBuilder = new StringBuilder();
 		List<FacilityDataSummary> monthlyDataSummaryList = new ArrayList<FacilityDataSummary>();
 
@@ -158,7 +163,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 					.append("SELECT recent.plantType, recent.fuelType, recent.coolingSystemType, recent.waterType, recent.waterSource, recent.waterSourceName, total.WaterConsumptionSummary, total.EmissionSummary, total.GenerationSummary, total.WaterWithdrawalSummary from recent, total");
 		}
 		try {
-			session.beginTransaction();
+			//session.beginTransaction();
 			Query query = session.createSQLQuery(gewQueryBuilder.toString());
 
 			query.setParameter("minYear", minYear);
@@ -177,60 +182,15 @@ public class EwedApiServiceImpl implements EwedApiService {
 		return monthlyDataSummaryList;
 	}
 
-	/*
-	 * DEPRECATED - NO LONGER USED
-	 */
-	@Deprecated 
-	public String getEWEData(List<String> registryIds, int minYear, int maxYear) {
-		EWEDataReturn returnData = new EWEDataReturn();
-
-		returnData.participatingFacilities = registryIds.size();
-
-		Query query = session.createQuery("SELECT sum(genSum) from GenerationPerRegistryIdView g" + " where g.genViewKey.registryId in (:ids) and genYear between :minYear and :maxYear");
-
-		query.setParameterList("ids", registryIds);
-		query.setParameter("minYear", minYear);
-		query.setParameter("maxYear", maxYear);
-		List<String> listResult = query.list();
-
-		returnData.generation = listResult.get(0);
-
-		query = session.createQuery("SELECT sum(emissionAmount) from EmissionsMonthly e" + " where e.emissionsMonthlyKey.registryId in (:ids) and emYear between :minYear and :maxYear");
-
-		query.setParameterList("ids", registryIds);
-		query.setParameter("minYear", minYear);
-		query.setParameter("maxYear", maxYear);
-		listResult.clear();
-		listResult = query.list();
-
-		returnData.emission = listResult.get(0);
-
-		query = session.createQuery("SELECT sum(usageSum) from WaterUsagePerRegView w" + " where w.waterViewKey.registryId in (:ids) and usageYear between :minYear and :maxYear");
-
-		query.setParameterList("ids", registryIds);
-		query.setParameter("minYear", minYear);
-		query.setParameter("maxYear", maxYear);
-		listResult.clear();
-		listResult = query.list();
-
-		returnData.waterUsage = listResult.get(0);
-
-		try {
-			return mapper.writeValueAsString(returnData);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return EPAConstants.genericErrorReturn;
-	}
 
 	/*
 	 * /getFacilityData API
 	 */
 	@Override
+	//@Transactional(readOnly = true)
 	public String getFacilityData(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
-
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
 		// get the facilities
 		List<FacilityWithSummaryData> facList = queryFacilityWithFuelType(null, filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 
@@ -256,8 +216,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 * /getFacilityData API for advanced system
 	 */
 	@Override
+	//@Transactional(readOnly = true)
 	public String getFutureFacilityData(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes,
 			String[] fuelTypeList) {
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
 		// get the facilities
 		List<FacilityWithSummaryData> facList = queryFacilityWithFuelType(caseModel, filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 
@@ -283,8 +246,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 * /getMonthWiseSummary API 
 	 */
 	@Override
+	//@Transactional(readOnly = true)
 	public String getMonthWiseSummary(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
-
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
 		// get monthWise summary
 		List<MonthWiseSummary> monthWiseSummaryList = new ArrayList<MonthWiseSummary>();
 		monthWiseSummaryList = queryMonthWiseSummary(null, filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
@@ -322,9 +287,12 @@ public class EwedApiServiceImpl implements EwedApiService {
 			}	
 		}
 		// add water available, if applicable
+		System.out.println("list: " + waterAvailabilityList);
 		if (filterField.equals("stateName") || filterField.equals("huc8Code") || filterField.equals("HUC8Name")) {
 			for (WaterAvailability waData : waterAvailabilityList) {
-				facMonthWiseData.get(waData.getYear()).get(waData.getMonth()).setWaterAvailability(waData.getWaterAvailable());
+				if (facMonthWiseData.get(waData.getYear()) != null && facMonthWiseData.get(waData.getYear()).get(waData.getMonth()) != null) {
+					facMonthWiseData.get(waData.getYear()).get(waData.getMonth()).setWaterAvailability(waData.getWaterAvailable());
+				}
 			}
 		}
 		// Stores the complete structure
@@ -344,8 +312,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 * /getMonthWiseSummary API for advanced system
 	 */
 	@Override
+	//@Transactional(readOnly = true)
 	public String getFutureMonthWiseSummary(String caseModel, String climateModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes,
 			String[] fuelTypeList) {
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
 		// get monthWise summary
 		List<MonthWiseSummary> monthWiseSummaryList = new ArrayList<MonthWiseSummary>();
 		monthWiseSummaryList = queryMonthWiseSummary(caseModel, filterField, filterValue, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
@@ -410,7 +381,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 	//@Transactional(readOnly = true)
 	public List<TotalSummary> queryTotalSummary(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType,
 			String[] fuelTypeList) {
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//session = HibernateUtil.getSessionFactory().getCurrentSession();
 		
 		StringBuilder gewQueryBuilder = new StringBuilder();
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
@@ -454,7 +425,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 		}
 
 		try {
-			session.beginTransaction();
+			//session.beginTransaction();
 			//session = sessionManager.createNewSessionAndTransaction();
 			Query query = null;
 			if (caseModel == null) {
@@ -487,7 +458,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 	//@Transactional(readOnly = true)
 	public List<MonthWiseSummary> queryMonthWiseSummary(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType,
 			String[] fuelTypeList) {
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//session = HibernateUtil.getSessionFactory().getCurrentSession();
 		StringBuilder gewQueryBuilder = new StringBuilder();
 		List<MonthWiseSummary> monthWiseSummaryList = new ArrayList<MonthWiseSummary>();
 
@@ -522,7 +493,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 		}
 
 		try {
-			session.beginTransaction();
+			//session.beginTransaction();
 			Query query = null;
 			if (caseModel == null) {
 				query = session.createQuery(gewQueryBuilder.toString());
@@ -565,7 +536,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 	//@Transactional(readOnly = true)
 	public List<FacilityWithSummaryData> queryFacilityWithFuelType(String caseModel, String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth, String fuelType,
 			String[] fuelTypeList) {
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//session = HibernateUtil.getSessionFactory().getCurrentSession();
 		StringBuilder facilityQuery = new StringBuilder();
 		List<FacilityWithSummaryData> facList = new ArrayList<FacilityWithSummaryData>();
 
@@ -581,7 +552,8 @@ public class EwedApiServiceImpl implements EwedApiService {
 			}
 			facilityQuery.append(" where ").append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND ")
 					.append("((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear))) ")
-					.append("GROUP BY g.plantCode, primaryName, naicsCode, registryId, facAddr, cityName, stateName, postalCode, latitude, longitude, GEOID, CountyState1, CountyState2, HUC8Code, HUC8Name, HUC8Acres");
+					.append("GROUP BY g.plantCode, primaryName, naicsCode, registryId, facAddr, cityName, stateName, postalCode, latitude, longitude, GEOID, CountyState1, CountyState2, HUC8Code, HUC8Name, HUC8Acres")
+					.append(" ORDER BY primaryName");
 		} else {
 			String fuelTypeListString = Stream.of(fuelTypeList).collect(Collectors.joining("','", "'", "'"));
 			if (caseModel == null) {
@@ -595,11 +567,12 @@ public class EwedApiServiceImpl implements EwedApiService {
 			}
 			facilityQuery.append(" where ").append(filterField).append(" = \'").append(filterValue).append("\'").append(" AND fuelType").append(" in (").append(fuelTypeListString).append(") AND ")
 					.append("((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear))) ")
-					.append("GROUP BY g.plantCode, primaryName, naicsCode, registryId, facAddr, cityName, stateName, postalCode, latitude, longitude, GEOID, CountyState1, CountyState2, HUC8Code, HUC8Name, HUC8Acres");
+					.append("GROUP BY g.plantCode, primaryName, naicsCode, registryId, facAddr, cityName, stateName, postalCode, latitude, longitude, GEOID, CountyState1, CountyState2, HUC8Code, HUC8Name, HUC8Acres")
+					.append(" ORDER BY primaryName");
 		}
 
 		try {
-			session.beginTransaction();
+			//session.beginTransaction();
 			Query query = null;
 			if (caseModel == null) {
 				query = session.createQuery(facilityQuery.toString());
@@ -627,10 +600,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 */
 	//@Transactional(readOnly = true)
 	public List<Facility> listOfFacilitiesWithinFilter(String filterField, String filterValue) {
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//session = HibernateUtil.getSessionFactory().getCurrentSession();
 		StringBuilder facilityQuery = new StringBuilder();
 		Query query = null;
-		session.beginTransaction();
+		//session.beginTransaction();
 		if (filterValue.equalsIgnoreCase("all")) {
 			facilityQuery.append("from Facility");
 			query = session.createQuery(facilityQuery.toString());
@@ -651,7 +624,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 * */
 	//@Transactional(readOnly = true)
 	public List<EWEDMonthlyData> queryMonthlyData(String caseModel, List<String> plantCodes, int minYear, int minMonth, int maxYear, int maxMonth) {
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//session = HibernateUtil.getSessionFactory().getCurrentSession();
 
 		List<EWEDMonthlyData> monthlyDataList = new ArrayList<EWEDMonthlyData>();
 		StringBuilder gewQueryBuilder = new StringBuilder();
@@ -669,7 +642,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 					.append("order by plantCode, genYear, genMonth");
 		}
 		try {
-			session.beginTransaction();
+			//session.beginTransaction();
 			Query query = null;
 			if (caseModel == null) {
 				query = session.createQuery(gewQueryBuilder.toString());
@@ -740,11 +713,12 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 * */
 	//@Transactional(readOnly = true)
 	public String defaultGEWData(String filterName, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
 		// query the total summary
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 		totalSummaryList = queryTotalSummary(null, filterName, "", minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
-
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		
 		Map<String, Object> completeData = new HashMap<String, Object>();
 		StringBuilder queryBuilder = new StringBuilder();
 		if (fuelTypeList[0].equals("all")) {
@@ -752,18 +726,19 @@ public class EwedApiServiceImpl implements EwedApiService {
 					" TRIM(str(ISNULL(sum(g.generation), 0), 17)) as generation, TRIM(str(ISNULL(sum(g.emissions), 0), 17)) as emission, TRIM(str(ISNULL(sum(g.waterWithdrawal), 0), 17)) as waterWithdrawal, TRIM(str(ISNULL(SUM(g.waterConsumption), 0), 17)) as waterConsumption) ")
 					.append(" from com.epa.views.GenEmWaterView g")
 					.append(" where ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))")
-					.append(" Group by ").append(filterName);
+					.append(" Group by ").append(filterName)
+					.append(" ORDER BY filterName");
 		} else {
 			String fuelTypeListString = Stream.of(fuelTypeList).collect(Collectors.joining("','", "'", "'"));
 			queryBuilder.append("SELECT new com.epa.views.DefaultOutputJson(cast(g.").append(filterName).append(" as string) as filterName,").append(
 					" TRIM(str(ISNULL(sum(g.generation), 0), 17)) as generation, TRIM(str(ISNULL(sum(g.emissions), 0), 17)) as emission, TRIM(str(ISNULL(sum(g.waterWithdrawal), 0), 17)) as waterWithdrawal, TRIM(str(ISNULL(SUM(g.waterConsumption), 0), 17)) as waterConsumption) ")
 					.append(" from com.epa.views.GenEmWaterView g WHERE ").append("fuelType").append(" in (").append(fuelTypeListString).append(") AND ")
 					.append(" ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear))) ")
-					.append(" GROUP BY ").append(filterName);
+					.append(" GROUP BY ").append(filterName)
+					.append(" ORDER BY filterName");
 		}
 
-		try {
-			session.beginTransaction();
+		try {			
 			Query query = session.createQuery(queryBuilder.toString());
 
 			query.setParameter("minYear", minYear);
@@ -795,11 +770,12 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 * */
 	//@Transactional(readOnly = true)
 	public String futureDefaultGEWData(String caseModel, String filterName, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
+		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
 		// get the total summary
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 		totalSummaryList = queryTotalSummary(caseModel, filterName, "", minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Map<String, Object> completeData = new HashMap<String, Object>();
 		StringBuilder queryBuilder = new StringBuilder();
 		if (fuelTypeList[0].equals("all")) {
@@ -807,7 +783,8 @@ public class EwedApiServiceImpl implements EwedApiService {
 					" LTRIM(RTRIM(str(ISNULL(sum(g.generation), 0), 17))) as generation, LTRIM(RTRIM(str(ISNULL(sum(g.emissions), 0), 17))) as emission, LTRIM(RTRIM(str(ISNULL(sum(g.waterWithdrawal), 0), 17))) as waterWithdrawal, LTRIM(RTRIM(str(ISNULL(SUM(g.waterConsumption), 0), 17))) as waterConsumption ")
 					.append("from p_facGenEmWaterView_").append(caseModel).append(" g ")
 					.append(" where ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear)))")
-					.append(" Group by ").append(filterName);
+					.append(" Group by ").append(filterName)
+					.append(" ORDER BY filterName");
 		} else {
 			String fuelTypeListString = Stream.of(fuelTypeList).collect(Collectors.joining("','", "'", "'"));
 			queryBuilder.append("SELECT g.").append(filterName).append(" as filterName,").append(
@@ -815,11 +792,11 @@ public class EwedApiServiceImpl implements EwedApiService {
 					.append("from p_facGenEmWaterView_").append(caseModel).append(" g ")
 					.append(" WHERE ").append("fuelType").append(" in (").append(fuelTypeListString).append(") AND ")
 					.append(" ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear))) ")
-					.append(" GROUP BY ").append(filterName);
+					.append(" GROUP BY ").append(filterName)
+					.append(" ORDER BY filterName");
 		}
 
 		try {
-			session.beginTransaction();
 			Query query = session.createSQLQuery(queryBuilder.toString());
 			query.setResultTransformer(Transformers.aliasToBean(DefaultOutputJson.class));
 			query.setParameter("minYear", minYear);
@@ -883,13 +860,14 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 * */
 	//@Transactional(readOnly = true)
 	public List<String> getHUCCodesFromName(String filterField, String filterValue) {
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//session = HibernateUtil.getSessionFactory().getCurrentSession();
 		StringBuilder hucQuery = new StringBuilder();
 		List<HucCodeToName> huc8CodeList = new ArrayList<HucCodeToName>();
 		hucQuery.append("SELECT new com.epa.beans.Huc.HucCodeToName (g.HUC8Name, STR(g.HUC8Code)) ").append("from GenEmWaterView g where ").append(filterField).append(" like \'%").append(filterValue)
-				.append("%\'");
+				.append("%\'")
+				.append("GROUP BY HUC8Name, HUC8Code");
 
-		session.beginTransaction();
+		//session.beginTransaction();
 		Query query = session.createQuery(hucQuery.toString());
 		System.out.println(query);
 
@@ -911,10 +889,10 @@ public class EwedApiServiceImpl implements EwedApiService {
 	//@Transactional(readOnly = true)
 	public List<String> getAllHUCCodes(String filterField, String filterValue, int minYear, int minMonth, int maxYear, int maxMonth) {
 		// allowed filterField - state and Huc
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//session = HibernateUtil.getSessionFactory().getCurrentSession();
 		StringBuilder facilityQuery = new StringBuilder();
 		Query query = null;
-		session.beginTransaction();
+		//session.beginTransaction();
 		if (filterValue.equalsIgnoreCase("all")) {
 			facilityQuery.append("from Facility");
 			query = session.createQuery(facilityQuery.toString());
@@ -942,9 +920,9 @@ public class EwedApiServiceImpl implements EwedApiService {
 	 */
 	//@Transactional(readOnly = true)
 	public List<WaterAvailability> getWaterAvailabilityDataList(String climateModel, List<String> hucCodes, int minYear, int minMonth, int maxYear, int maxMonth) {
-		session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//session = HibernateUtil.getSessionFactory().getCurrentSession();
 		List<WaterAvailability> waterAvailibilityList = new ArrayList<WaterAvailability>();
-		session.beginTransaction();
+		//session.beginTransaction();
 
 		if (hucCodes.size() == 1) {
 			StringBuilder queryBuilder = new StringBuilder();
@@ -1024,7 +1002,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 	//@Transactional(readOnly = true)
 	public String getSummaryWithin(String filterField1, String filterValue1, String filterField2, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
 		session = HibernateUtil.getSessionFactory().getCurrentSession();
-
+		session.beginTransaction();
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 		totalSummaryList = queryTotalSummary(null, filterField1, filterValue1, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 
@@ -1035,19 +1013,20 @@ public class EwedApiServiceImpl implements EwedApiService {
 					" as string) as filterName, TRIM(str(ISNULL(sum(g.generation), 0), 17)) as generation, TRIM(str(ISNULL(sum(g.emissions), 0), 17)) as emission, TRIM(str(ISNULL(sum(g.waterWithdrawal), 0), 17)) as waterWithdrawal, TRIM(str(ISNULL(SUM(g.waterConsumption), 0), 17)) as waterConsumption) from com.epa.views.GenEmWaterView g where ")
 					.append(filterField1).append(" = \'").append(filterValue1).append("\'").append(" AND ")
 					.append(" ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear))) ")
-					.append(" GROUP BY ").append(filterField2);
+					.append(" GROUP BY ").append(filterField2)
+					.append(" ORDER BY filterName");
 		} else {
 			String fuelTypeListString = Stream.of(fuelTypeList).collect(Collectors.joining("','", "'", "'"));
 			viewQuery.append("SELECT new com.epa.views.DefaultOutputJson(cast(g.").append(filterField2).append(
 					" as string) as filterName, TRIM(str(ISNULL(sum(g.generation), 0), 17)) as generation, TRIM(str(ISNULL(sum(g.emissions), 0), 17)) as emission, TRIM(str(ISNULL(sum(g.waterWithdrawal), 0), 17)) as waterWithdrawal, TRIM(str(ISNULL(SUM(g.waterConsumption), 0), 17)) as waterConsumption) from com.epa.views.GenEmWaterView g where ")
 					.append(filterField1).append(" = \'").append(filterValue1).append("\'").append(" AND fuelType").append(" in (").append(fuelTypeListString).append(") AND ")
 					.append(" ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear))) ")
-					.append(" GROUP BY ").append(filterField2);
+					.append(" GROUP BY ").append(filterField2)
+					.append(" ORDER BY filterName");
 		}
-		Map<String, Object> returnData = new HashMap<String, Object>();
+		HashMap<String, Object> returnData = new HashMap<String, Object>();
 
-		try {
-			session.beginTransaction();
+		try {			
 			Query query = session.createQuery(viewQuery.toString());
 
 			query.setParameter("minYear", minYear);
@@ -1066,6 +1045,7 @@ public class EwedApiServiceImpl implements EwedApiService {
 		}
 
 		try {
+			//mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
 			return mapper.writeValueAsString(returnData);
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
@@ -1082,7 +1062,8 @@ public class EwedApiServiceImpl implements EwedApiService {
 	//@Transactional(readOnly = true)
 	public String getFutureSummaryWithin(String caseModel, String filterField1, String filterValue1, String filterField2, int minYear, int minMonth, int maxYear, int maxMonth, String fuelTypes, String[] fuelTypeList) {
 		session = HibernateUtil.getSessionFactory().getCurrentSession();
-
+		session.beginTransaction();
+		
 		List<TotalSummary> totalSummaryList = new ArrayList<TotalSummary>();
 		totalSummaryList = queryTotalSummary(caseModel, filterField1, filterValue1, minYear, minMonth, maxYear, maxMonth, fuelTypes, fuelTypeList);
 
@@ -1094,7 +1075,8 @@ public class EwedApiServiceImpl implements EwedApiService {
 					.append("from p_facGenEmWaterView_").append(caseModel).append(" g where ")
 					.append(filterField1).append(" = \'").append(filterValue1).append("\'").append(" AND ")
 					.append(" ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear))) ")
-					.append(" GROUP BY ").append(filterField2);
+					.append(" GROUP BY ").append(filterField2)
+					.append(" ORDER BY filterName");
 		} else {
 			String fuelTypeListString = Stream.of(fuelTypeList).collect(Collectors.joining("','", "'", "'"));
 			viewQuery.append("SELECT g.").append(filterField2).append(" as filterName,") 
@@ -1102,12 +1084,12 @@ public class EwedApiServiceImpl implements EwedApiService {
 					.append("from p_facGenEmWaterView_").append(caseModel).append(" g where ")
 					.append(filterField1).append(" = \'").append(filterValue1).append("\'").append(" AND fuelType").append(" in (").append(fuelTypeListString).append(") AND ")
 					.append(" ((( genYear = :minYear and genMonth >= :minMonth) OR (genYear > :minYear)) and ((genYear = :maxYear and genMonth <= :maxMonth) or (genYear < :maxYear))) ")
-					.append(" GROUP BY ").append(filterField2);
+					.append(" GROUP BY ").append(filterField2)
+					.append(" ORDER BY filterName");
 		}
-		Map<String, Object> returnData = new HashMap<String, Object>();
+		HashMap<String, Object> returnData = new HashMap<String, Object>();
 
 		try {
-			session.beginTransaction();
 			//session = sessionManager.createNewSessionAndTransaction();
 			Query query = session.createSQLQuery(viewQuery.toString());
 			query.setResultTransformer(Transformers.aliasToBean(DefaultOutputJson.class));

@@ -13,11 +13,9 @@ import com.epa.beans.AdvancedGeneration.GenerationLowPrice;
 import com.epa.beans.AdvancedGeneration.GenerationLowRT;
 import com.epa.beans.AdvancedGeneration.GenerationRef2019;
 import com.epa.beans.EIAGeneration.DominantPlantType;
-import com.epa.beans.EIAGeneration.GenerationPerRegistryIdView;
 import com.epa.beans.EIAGeneration.GenerationRow;
 import com.epa.beans.Facility.Facility;
 import com.epa.beans.Facility.Facility860;
-import com.epa.beans.Facility.FacilityInfo;
 import com.epa.beans.GHGEmissions.EmissionsMonthly;
 import com.epa.beans.GHGEmissions.EmissionsRow;
 import com.epa.beans.GHGEmissions.GasInfo;
@@ -28,10 +26,8 @@ import com.epa.beans.SummaryData.FacilityDataSummary;
 import com.epa.beans.SummaryData.FacilityWithSummaryData;
 import com.epa.beans.WaterUsage.WaterAvailability;
 import com.epa.beans.WaterUsage.WaterUsage;
-import com.epa.beans.WaterUsage.WaterUsagePerRegView;
 import com.epa.views.DefaultOutputJson;
 import com.epa.views.GenEmWaterView;
-import com.epa.views.GenEmWater_REF2019;
  
 public class HibernateUtil {
 	
@@ -54,11 +50,7 @@ public class HibernateUtil {
 	                  addAnnotatedClass(Facility.class).
 	                  addAnnotatedClass(GasInfo.class).
 	                  addAnnotatedClass(EmissionsRow.class).
-	                  addAnnotatedClass(FacilityInfo.class).
-	                  addAnnotatedClass(GenerationPerRegistryIdView.class).
 	                  addAnnotatedClass(EmissionsMonthly.class).
-	                  addAnnotatedClass(WaterUsage.class).
-	                  addAnnotatedClass(WaterUsagePerRegView.class).
 	                  addAnnotatedClass(DominantPlantType.class).
 	                  addAnnotatedClass(LocalFacIdToORISCodeView.class).
 	                  addAnnotatedClass(GenEmWaterView.class). 
@@ -70,7 +62,6 @@ public class HibernateUtil {
 	                  addAnnotatedClass(MonthWiseSummary.class).
 	                  addAnnotatedClass(TotalSummary.class).
 	                  addAnnotatedClass(EWEDMonthlyData.class).
-	                  addAnnotatedClass(GenEmWater_REF2019.class).
 	                  addAnnotatedClass(GenerationHighMacro.class).
 	                  addAnnotatedClass(GenerationLowMacro.class).
 	                  addAnnotatedClass(GenerationHighPrice.class).

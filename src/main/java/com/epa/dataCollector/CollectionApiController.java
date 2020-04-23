@@ -72,18 +72,6 @@ public class CollectionApiController {
 		
 		return apiService.getGenerationData(plantCode).toString();
 	}
-
-	
-	/**
-	 * This method is used to get the information of all the pollutants from the pollutant table in the frs database. 
-	 * If a pollutant code is mentioned then the function will return information about just one pollutant.
-	 * @param pollutantCode
-	 * @return String of pollutants
-	 */
-	@RequestMapping(method = RequestMethod.GET,  value = "/getPollutantInfo")
-	public String getPollutantInfo( @RequestParam(value="pollutantCode", defaultValue = "") String pollutantCode) {
-		return apiService.getPollutantInfoImpl(pollutantCode);
-	}
 	
 	/**
 	 * This method is used to get the information of all the greenhouse gases from the GHG database. 
