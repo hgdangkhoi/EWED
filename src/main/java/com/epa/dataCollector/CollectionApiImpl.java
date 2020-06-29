@@ -410,7 +410,7 @@ public class CollectionApiImpl implements CollectionApiService{
 		int genFound = 0, genNotFound = 0;
 		
 		try {
-			Query query = session.createQuery("select distinct pgmSysId from Facility860");
+			Query query = session.createQuery("select distinct pgmSysId from Facility");
 			List<String> list = query.list();
 			
 			for(String plantCode : list) {
@@ -426,13 +426,13 @@ public class CollectionApiImpl implements CollectionApiService{
 					for (String[] dataRow : plantGen.getData()) {
 						GenerationRow row = new GenerationRow();
 						KeyItems keyItems = new KeyItems();
-						keyItems.setPlantCode(plant.getPlantCode());
-						keyItems.setGenYear(dataRow[0].substring(0, 4));
-						keyItems.setGenMonth(dataRow[0].substring(4, 6));
+						keyItems.setPlantCode(Integer.parseInt(plant.getPlantCode()));
+						keyItems.setGenYear(Integer.parseInt(dataRow[0].substring(0, 4)));
+						keyItems.setGenMonth(Integer.parseInt(dataRow[0].substring(4, 6)));
 						row.setPlantName(plantGen.getName().split(":")[1].trim());
 						// If required to convert month in int to word use - new DateFormatSymbols().getMonths()[Integer.parseInt( dataRow[0].substring(4, 6))-1] 
 						row.setKeyTimes(keyItems);
-						row.setGenData(dataRow[1]);
+						row.setGenData(Float.parseFloat(dataRow[1]));
 						row.setUnits(plantGen.getUnits());
 						row.setLatitude(plantGen.getLatitude());
 						row.setLongitude(plantGen.getLongitude());
@@ -479,13 +479,13 @@ public class CollectionApiImpl implements CollectionApiService{
 					for (String[] dataRow : plantGen.getData()) {
 						GenerationRow row = new GenerationRow();
 						KeyItems keyItems = new KeyItems();
-						keyItems.setPlantCode(plant.getPlantCode());
-						keyItems.setGenYear(dataRow[0].substring(0, 4));
-						keyItems.setGenMonth(dataRow[0].substring(4, 6));
+						keyItems.setPlantCode(Integer.parseInt(plant.getPlantCode()));
+						keyItems.setGenYear(Integer.parseInt(dataRow[0].substring(0, 4)));
+						keyItems.setGenMonth(Integer.parseInt(dataRow[0].substring(4, 6)));
 						row.setPlantName(plantGen.getName().split(":")[1].trim());
 						// If required to convert month in int to word use - new DateFormatSymbols().getMonths()[Integer.parseInt( dataRow[0].substring(4, 6))-1] 
 						row.setKeyTimes(keyItems);
-						row.setGenData(dataRow[1]);
+						row.setGenData(Float.parseFloat(dataRow[1]));
 						row.setUnits(plantGen.getUnits());
 						row.setLatitude(plantGen.getLatitude());
 						row.setLongitude(plantGen.getLongitude());
@@ -686,13 +686,11 @@ public class CollectionApiImpl implements CollectionApiService{
 	
 	public String updateDominantPlantType(int startYear, int endYear) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
-		Query query = session.createSQLQuery("SELECT distinct plantCode " + 
-				"  FROM generation " + 
-				"  where genYear = 2018 " + 
+		Query query = session.createSQLQuery("SELECT distinct pgmSysId " + 
+				"  FROM facility860C " + 
 				"  EXCEPT " + 
 				"  SELECT DISTINCT(plantcode) " + 
-				"  FROM dominantPlantType " + 
-				"  where genYear = 2018");
+				"  FROM dominantPlantType ");
 		List<String> plantCodes = query.list();
 		
 		System.out.println("plantCodes = " + plantCodes);
@@ -745,6 +743,7 @@ public class CollectionApiImpl implements CollectionApiService{
 		System.out.println(urlBuilder.toString());
 		
 		RestTemplate rst = new RestTemplate();
+		rst.setErrorHandler(new RestTemplateResponseErrorHandler());
 		String result = rst.getForObject(urlBuilder.toString(), String.class);
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -756,7 +755,7 @@ public class CollectionApiImpl implements CollectionApiService{
 				 plantGeneration = plant.getSeries();
 			 }
 		} catch (IOException e) {
-			}
+		}
 		
 		return plantGeneration;
 	}
@@ -769,7 +768,7 @@ public class CollectionApiImpl implements CollectionApiService{
 			
 			for(int year: yearTypeMap.keySet()) {
 				String dType = yearTypeMap.get(year);
-				DominantPlantType dominantType = new DominantPlantType(new CompositeKeyForDominantType(plantCode, year), dType);
+				DominantPlantType dominantType = new DominantPlantType(new CompositeKeyForDominantType(plantCode, year), dType, 0);
 				
 				session.saveOrUpdate(dominantType);
 			}

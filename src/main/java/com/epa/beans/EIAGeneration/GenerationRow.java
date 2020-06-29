@@ -13,15 +13,15 @@ import javax.persistence.Table;
  */
 
 @Entity
-//@Table(name="generation")
-@Table(name="generation_newFac")
+@Table(name="generation")
+//@Table(name="generation_newFac")
 public class GenerationRow {
 	
 	@Column(name = "plantName")
 	String plantName;
 	
 	@Column(name = "genData")
-	String genData;
+	float genData;
 	
 	@Column(name = "units")
 	String units;
@@ -39,7 +39,7 @@ public class GenerationRow {
 		// TODO Auto-generated constructor stub
 	}
 
-	public GenerationRow(String plantName, String genData, String units, KeyItems keyItems) {
+	public GenerationRow(String plantName, float genData, String units, KeyItems keyItems) {
 		super();
 		this.plantName = plantName;
 		this.genData = genData;
@@ -55,11 +55,11 @@ public class GenerationRow {
 		this.plantName = plantName;
 	}
 
-	public String getGenData() {
+	public float getGenData() {
 		return genData;
 	}
 
-	public void setGenData(String genData) {
+	public void setGenData(float genData) {
 		this.genData = genData;
 	}
 

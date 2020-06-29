@@ -35,7 +35,6 @@ import com.epa.beans.SummaryData.TotalSummary;
 import com.epa.beans.WaterUsage.WaterAvailability;
 import com.epa.util.EPAConstants;
 import com.epa.util.HibernateUtil;
-import com.epa.util.SessionManager;
 import com.epa.views.DefaultOutputJson;
 import com.epa.views.DefaultOutputJson_custom;
 import com.epa.views.GenEmWaterView;
@@ -52,7 +51,6 @@ public class EwedApiServiceImpl implements EwedApiService {
 	@Autowired
 	ObjectMapper mapper = new ObjectMapper();
 	//public Session session;
-	SessionManager sessionManager = new SessionManager();
 	NumberFormat formatter = new DecimalFormat("########");
 
 	/*

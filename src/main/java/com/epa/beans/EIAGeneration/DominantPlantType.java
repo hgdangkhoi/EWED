@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-//Teju
 @Entity
 @Table(name = "dominantPlantType")
 public class DominantPlantType implements Serializable{
@@ -24,14 +23,18 @@ public class DominantPlantType implements Serializable{
 	@Column(name="dominantType")
 	String dominantType;
 	
+	@Column(name="derived")
+	int derived;
+	
 	public DominantPlantType() {
 		
 	}
 
-	public DominantPlantType(CompositeKeyForDominantType compKey, String dominantType) {
+	public DominantPlantType(CompositeKeyForDominantType compKey, String dominantType, int derived) {
 		super();
 		this.compKey = compKey;
 		this.dominantType = dominantType;
+		this.derived = derived;
 	}
 
 	public String getDominantType() {
@@ -40,6 +43,14 @@ public class DominantPlantType implements Serializable{
 
 	public void setDominantType(String dominantType) {
 		this.dominantType = dominantType;
+	}
+
+	public int getDerived() {
+		return derived;
+	}
+
+	public void setDerived(int derived) {
+		this.derived = derived;
 	}
 
 	@Override
