@@ -4,3 +4,4 @@ bin/
 .setttings
 target
 src/main/resources/
+src/main/*.zip
