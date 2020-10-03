@@ -18,7 +18,7 @@ import com.epa.beans.EIAGeneration.KeyItemsNewGeneration;
 public class GenerationHighRT {
 	
 	@Column(name = "genData")
-	String genData;
+	Float genData;
 	
 	@Column(name = "units")
 	String units;
@@ -41,11 +41,11 @@ public class GenerationHighRT {
 		return "GenerationHighRT [genData=" + genData + ", units=" + units + ", keyTimes=" + keyTimes + "]";
 	}
 
-	public String getGenData() {
+	public Float getGenData() {
 		return genData;
 	}
 
-	public void setGenData(String genData) {
+	public void setGenData(Float genData) {
 		this.genData = genData;
 	}
 

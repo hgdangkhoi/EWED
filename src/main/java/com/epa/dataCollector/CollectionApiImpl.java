@@ -171,6 +171,7 @@ public class CollectionApiImpl implements CollectionApiService{
 
 		urlBuilder.append(EPAConstants.eiaBaseURL).append(EPAConstants.eiaSeriesHead).append(plantCode).append(EPAConstants.eiaSeriesTail);
 		System.out.println(urlBuilder);
+		restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler());
 		GenerationSeries plant = restTemplate.getForObject(urlBuilder.toString() , GenerationSeries.class);
 		plant.setPlantCode(plantCode);
 		return plant;
@@ -215,7 +216,7 @@ public class CollectionApiImpl implements CollectionApiService{
 									case "REF2019":{
 										GenerationRef2019 row = new GenerationRef2019();
 										row.setKeyTimes(keyItems);
-										row.setGenData(dataRow[1]);
+										row.setGenData(Float.valueOf(dataRow[1]));
 										row.setUnits(plantGen.getUnits());							
 										System.out.println(row);
 										
@@ -224,7 +225,7 @@ public class CollectionApiImpl implements CollectionApiService{
 									}case "HIGHMACRO":{
 										GenerationHighMacro row = new GenerationHighMacro();
 										row.setKeyTimes(keyItems);
-										row.setGenData(dataRow[1]);
+										row.setGenData(Float.valueOf(dataRow[1]));
 										row.setUnits(plantGen.getUnits());							
 										System.out.println(row);
 										
@@ -233,7 +234,7 @@ public class CollectionApiImpl implements CollectionApiService{
 									}case "LOWMACRO":{
 										GenerationLowMacro row = new GenerationLowMacro();
 										row.setKeyTimes(keyItems);
-										row.setGenData(dataRow[1]);
+										row.setGenData(Float.valueOf(dataRow[1]));
 										row.setUnits(plantGen.getUnits());							
 										System.out.println(row);
 										
@@ -242,7 +243,7 @@ public class CollectionApiImpl implements CollectionApiService{
 									}case "HIGHPRICE":{
 										GenerationHighPrice row = new GenerationHighPrice();
 										row.setKeyTimes(keyItems);
-										row.setGenData(dataRow[1]);
+										row.setGenData(Float.valueOf(dataRow[1]));
 										row.setUnits(plantGen.getUnits());							
 										System.out.println(row);
 										
@@ -251,7 +252,7 @@ public class CollectionApiImpl implements CollectionApiService{
 									}case "LOWPRICE":{
 										GenerationLowPrice row = new GenerationLowPrice();
 										row.setKeyTimes(keyItems);
-										row.setGenData(dataRow[1]);
+										row.setGenData(Float.valueOf(dataRow[1]));
 										row.setUnits(plantGen.getUnits());							
 										System.out.println(row);
 										
@@ -260,7 +261,7 @@ public class CollectionApiImpl implements CollectionApiService{
 									}case "HIGHRT":{
 										GenerationHighRT row = new GenerationHighRT();
 										row.setKeyTimes(keyItems);
-										row.setGenData(dataRow[1]);
+										row.setGenData(Float.valueOf(dataRow[1]));
 										row.setUnits(plantGen.getUnits());							
 										System.out.println(row);
 										
@@ -269,7 +270,7 @@ public class CollectionApiImpl implements CollectionApiService{
 									}case "LOWRT":{
 										GenerationLowRT row = new GenerationLowRT();
 										row.setKeyTimes(keyItems);
-										row.setGenData(dataRow[1]);
+										row.setGenData(Float.valueOf(dataRow[1]));
 										row.setUnits(plantGen.getUnits());							
 										System.out.println(row);
 										
@@ -278,7 +279,7 @@ public class CollectionApiImpl implements CollectionApiService{
 									}case "AEO2018NO":{
 										GenerationAeo2018No row = new GenerationAeo2018No();
 										row.setKeyTimes(keyItems);
-										row.setGenData(dataRow[1]);
+										row.setGenData(Float.valueOf(dataRow[1]));
 										row.setUnits(plantGen.getUnits());							
 										System.out.println(row);
 										
@@ -414,6 +415,64 @@ public class CollectionApiImpl implements CollectionApiService{
 			List<String> list = query.list();
 			
 			for(String plantCode : list) {
+				GenerationSeries plant = getGenerationData(plantCode);  //9255 index gives plant code 2512
+				System.out.println(plant);
+				
+				if(plant.getSeries() != null) {
+					
+					Transaction tx = null;
+					tx = session.beginTransaction();
+					PlantGeneration plantGen = ((PlantGeneration) (plant.getSeries()[0]));
+					
+					for (String[] dataRow : plantGen.getData()) {
+						GenerationRow row = new GenerationRow();
+						KeyItems keyItems = new KeyItems();
+						keyItems.setPlantCode(Integer.parseInt(plant.getPlantCode()));
+						keyItems.setGenYear(Integer.parseInt(dataRow[0].substring(0, 4)));
+						keyItems.setGenMonth(Integer.parseInt(dataRow[0].substring(4, 6)));
+						row.setPlantName(plantGen.getName().split(":")[1].trim());
+						// If required to convert month in int to word use - new DateFormatSymbols().getMonths()[Integer.parseInt( dataRow[0].substring(4, 6))-1] 
+						row.setKeyTimes(keyItems);
+						row.setGenData(Float.parseFloat(dataRow[1]));
+						row.setUnits(plantGen.getUnits());
+						row.setLatitude(plantGen.getLatitude());
+						row.setLongitude(plantGen.getLongitude());
+						System.out.println(row);
+						
+						session.saveOrUpdate(row);
+						genFound++;
+					}
+						tx.commit();
+				} else {
+					genNotFound++;
+					System.out.println("No generation for - " + plant.getPlantCode());
+				}
+			}
+			
+		} finally {
+		 session.close();
+		} 
+		
+		return "genFound = " + genFound + " genNotFound = " + genNotFound;
+	}
+	
+	
+	public String getMissingGeneration() {
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		int genFound = 0, genNotFound = 0;
+		
+		try {
+			Query query = session.createSQLQuery("SELECT distinct pgmSysId " + 
+					"  FROM facility860C " + 
+					"  EXCEPT " + 
+					"  SELECT DISTINCT(plantcode) " + 
+					"  FROM generation ");
+			List<String> list = query.list();
+			System.out.println("plantCodes = " + list);
+			for(int j=0; j<list.size(); j++) {
+				//System.out.println(plantCodes);
+				String plantCode = String.valueOf(list.get(j));
 				GenerationSeries plant = getGenerationData(plantCode);  //9255 index gives plant code 2512
 				System.out.println(plant);
 				

@@ -26,7 +26,8 @@ public class EPAConstants {
 	public static final String eiaSeriesEmmTail = "_BLNKWH.A";
 	
 	//URL Constants
-	public static final String enviroFactsBaseURL = "https://iaspub.epa.gov/enviro/efservice/";
+	//public static final String enviroFactsBaseURL = "https://iaspub.epa.gov/enviro/efservice/";
+	public static final String enviroFactsBaseURL = "https://enviro.epa.gov/enviro/efservice/";
 	//public static final String enviroFactsEIA860 = "PGM_SYS_ACRNM/EIA-860/";
 	public static final String enviroFactsRowSpecifier = "/rows/";
 

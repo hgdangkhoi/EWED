@@ -16,7 +16,6 @@ import com.epa.beans.EIAGeneration.DominantPlantType;
 import com.epa.beans.EIAGeneration.GenerationRow;
 import com.epa.beans.Facility.Facility;
 import com.epa.beans.Facility.Facility860;
-import com.epa.beans.GHGEmissions.EmissionsMonthly;
 import com.epa.beans.GHGEmissions.EmissionsRow;
 import com.epa.beans.GHGEmissions.GasInfo;
 import com.epa.beans.GHGEmissions.LocalFacIdToORISCodeView;
@@ -50,7 +49,6 @@ public class HibernateUtil {
 	                  addAnnotatedClass(Facility.class).
 	                  addAnnotatedClass(GasInfo.class).
 	                  addAnnotatedClass(EmissionsRow.class).
-	                  addAnnotatedClass(EmissionsMonthly.class).
 	                  addAnnotatedClass(DominantPlantType.class).
 	                  addAnnotatedClass(LocalFacIdToORISCodeView.class).
 	                  addAnnotatedClass(GenEmWaterView.class). 

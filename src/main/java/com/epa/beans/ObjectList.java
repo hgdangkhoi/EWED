@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * DEPRECATED - NO LONGER USED
  * 
  * This is a template class which ensures all types of such lists
  * remain in the same format and with the same methods. For any type

@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class EnviroFactsUtil {
 	
 	/**
+	 * NOT SURE IF STILL USED. MOST LIKELY DEPRECATED
+	 * 
 	 * This method is the base setup for a future implementation of logging.
 	 * 
 	 * @param LOG

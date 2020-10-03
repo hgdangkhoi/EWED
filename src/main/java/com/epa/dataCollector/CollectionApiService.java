@@ -17,7 +17,9 @@ public interface CollectionApiService {
 	
 	public boolean clearLists();
 	
-	public String getAllGeneration(); 
+	public String getAllGeneration();
+	
+	public String getMissingGeneration();
 	
 	public String getFutureGeneration();
 	

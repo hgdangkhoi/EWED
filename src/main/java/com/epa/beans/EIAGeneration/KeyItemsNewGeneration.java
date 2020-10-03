@@ -6,9 +6,9 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
- * The composite key for the table of the new Generation consists 
+ * The composite key for the table of the advanced system Generation consists 
  * of the following elements
- *
+ * 
  */
 @Embeddable
 public class KeyItemsNewGeneration implements Serializable{

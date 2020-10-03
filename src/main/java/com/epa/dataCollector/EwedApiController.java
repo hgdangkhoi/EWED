@@ -12,6 +12,9 @@ public class EwedApiController {
 	@Autowired
 	EwedApiService apiService;
 	
+	/*
+	 * Endpoint for debug or test new API
+	 * */
 	@RequestMapping("/test")
 	public String test() {
 		System.out.println("Reached ewed api test");
@@ -23,6 +26,8 @@ public class EwedApiController {
 	 * This function uses the filter field to match the filter value in the 
 	 * facility info table and returns the facility information json along
 	 * with the monthly data summary
+	 * 
+	 * This API return only one facility and its information (monthly data, etc)
 	 * 
 	 * @return Facility Information and monthly data Summary JSON
 	 */
@@ -39,6 +44,8 @@ public class EwedApiController {
 	 * 
 	 * This function behaves the same way as /getFacility, but this is used for advanced system
 	 * @param caseModel is for the case scenario of the advanced system
+	 * 
+	 * This API return only one facility and its information (monthly data, etc)
 	 * 
 	 * @return Facility Information and monthly data Summary JSON
 	 */

@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * This table corresponds to the facility860 table with updated values using various
  * information provided by Dr.Fulton or by manually processed by scripts
+ * 
+ * We use this table, facility860C for our production.
  */
 @Entity
 @Table(name="facility860C")

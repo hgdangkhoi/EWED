@@ -14,8 +14,7 @@ import com.epa.util.EnviroFactsUtil;
 
 /**
  * 
- * The rest mapping of the server ends up on this controller.
- * This is the default controller. 
+ * This file has all the API used for collecting the data from the Web Services
  *
  */
 @RestController
@@ -27,6 +26,9 @@ public class CollectionApiController {
    private static final Logger LOG = LoggerFactory.getLogger(EnviroFactsUtil.class);
 //   private static CollectionControllerApiImpl apiImpl = new CollectionControllerApiImpl();
    
+   	/*
+   	 *	Use for testing or debugging a new API 
+   	 * */
 	@RequestMapping("/test")
 	public String test() {
 		System.out.println("Reached collection test");
@@ -120,6 +122,19 @@ public class CollectionApiController {
 	@RequestMapping(method = RequestMethod.GET, value = "/getAllGeneration")
 	public String getAllGeneration() {
 		return apiService.getAllGeneration();
+	}
+	
+	/**
+	 * This function is used to get MISSING generation data on all the facilities 
+	 * currently present in the mapped facility table based upon their plant codes. 
+	 * It will use the plantCode in the Facility860C table and NOT in the generation table
+	 * 
+	 * @return String delineating number of facilities whose generation were found
+	 * and not found.
+	 */
+	@RequestMapping(method = RequestMethod.GET, value = "/getMissingGeneration")
+	public String getMissingGeneration() {
+		return apiService.getMissingGeneration();
 	}
 	
 	/**

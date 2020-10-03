@@ -5,12 +5,12 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+/* 
+ * Composite key for emission table
+ * */
 @Embeddable
 public class EmissionsKey implements Serializable{
 
-	/**
-	 * Feel like this is DEPRECATED
-	 */
 	private static final long serialVersionUID = -979102299038558768L;
 
 	@Column(name = "ORISCode")

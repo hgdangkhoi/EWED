@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/*
+ * Table dominantPlantType to pull date and get the dominant plant for each facility each year 
+ * */
 @Entity
 @Table(name = "dominantPlantType")
 public class DominantPlantType implements Serializable{

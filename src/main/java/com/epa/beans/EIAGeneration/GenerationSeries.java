@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This class maps to the parent object of the generation 
- * json othat is returned from EIA call.
- *
+ * json that is returned from EIA call.
+ * Used to get generation data from Web Services
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GenerationSeries {

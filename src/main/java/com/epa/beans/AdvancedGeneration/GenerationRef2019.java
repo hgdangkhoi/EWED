@@ -18,7 +18,7 @@ import com.epa.beans.EIAGeneration.KeyItemsNewGeneration;
 public class GenerationRef2019 {
 	
 	@Column(name = "genData")
-	String genData;
+	Float genData;
 	
 	@Column(name = "units")
 	String units;
@@ -40,11 +40,11 @@ public class GenerationRef2019 {
 				+ ", keyTimes=" + keyTimes + "]";
 	}
 
-	public String getGenData() {
+	public Float getGenData() {
 		return genData;
 	}
 
-	public void setGenData(String genData) {
+	public void setGenData(Float genData) {
 		this.genData = genData;
 	}
 

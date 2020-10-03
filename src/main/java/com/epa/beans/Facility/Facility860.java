@@ -15,6 +15,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * registryId may not unique within a set of results.
  * The segregation of facilityInfo and facilityMapping has been
  * done in order to avoid such conflicts. 
+ * 
+ * This table is used to pull data from the Web Services. The data is then cleaned and
+ * more details are added. The final facility table we use for production is facility860C
  */
 @Entity
 @Table(name="facility860")
